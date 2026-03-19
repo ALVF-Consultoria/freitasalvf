@@ -8,6 +8,7 @@ import {
   MessageSquareQuote, BookOpen, PenTool, Globe, FileText,
   MessageCircle, LayoutDashboard, Rocket, TrendingUp
 } from "lucide-react";
+import { ScrollIndicator } from "../components/common/ScrollIndicator";
 
 interface AISolutionProps {
   onBack: () => void;
@@ -98,16 +99,25 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
   const [step, setStep] = useState(1);
   const lastScrollTime = useRef(0);
   const totalSteps = 21;
+  const stepRef = useRef(1);
+
+  useEffect(() => {
+    stepRef.current = step;
+  }, [step]);
 
   useEffect(() => {
     const handleNavigation = (direction: "next" | "prev") => {
       const now = Date.now();
       if (now - lastScrollTime.current > 700) { // Cooldown mais agressivo para 21 steps
-        setStep((prev) => {
-          if (direction === "next" && prev < totalSteps) return prev + 1;
-          if (direction === "prev" && prev > 1) return prev - 1;
-          return prev;
-        });
+        if (direction === "next") {
+          if (stepRef.current < totalSteps) {
+            setStep((prev) => prev + 1);
+          } else {
+            onBack(); // Volta automática ao dashboard no fim
+          }
+        } else if (direction === "prev" && stepRef.current > 1) {
+          setStep((prev) => prev - 1);
+        }
         lastScrollTime.current = now;
       }
     };
@@ -152,7 +162,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
         <div className="p-2 rounded-full border border-white/10 group-hover:border-white/30 bg-white/5 backdrop-blur-md">
           <ArrowLeft className="w-5 h-5" />
         </div>
-        <span className="text-xs font-mono tracking-widest uppercase">Dashboard</span>
+        <span className="text-xs font-mono tracking-widest uppercase">FECHAR</span>
       </motion.button>
 
       <div className="relative z-10 w-full max-w-7xl flex flex-col items-center justify-center min-h-[60vh]">
@@ -354,14 +364,16 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
             </motion.div>
           )}
         </AnimatePresence>
-
+ 
+        {step === 1 && <ScrollIndicator />}
+ 
         {/* PROCEED INDICATOR */}
         {step < totalSteps && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 0] }} transition={{ duration: 2, repeat: Infinity }}
             className="fixed bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
           >
-            <span className="text-[10px] font-mono text-white/30 uppercase tracking-[0.3em]">PROXIMO_MODULO_DISPONIVEL</span>
+            <span className="text-[10px] font-mono text-white/30 uppercase tracking-[0.3em]">PRÓXIMO_MÓDULO_DISPONÍVEL</span>
             <div className="w-px h-12 bg-linear-to-b from-white/20 to-transparent" />
           </motion.div>
         )}
@@ -369,9 +381,9 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
 
       {/* Footer Labels */}
       <div className="absolute bottom-6 left-8 flex flex-col gap-1 opacity-20 font-mono text-[8px] text-white pointer-events-none uppercase text-left">
-        <span>AGENT_PROTOCOL: NAIA_V6.1.0</span>
-        <span>ACTIVE_MODULE: {step <= 7 ? 'AVALIATIVA' : step <= 14 ? 'STORYTELLING' : 'BUSINESS_INTEL'}</span>
-        <span>SEQUENCE_BUFFER: {step}/21</span>
+        <span>PROTOCOLO_AGENTE: NAIA_V6.1.0</span>
+        <span>MÓDULO_ATIVO: {step <= 7 ? 'AVALIATIVA' : step <= 14 ? 'STORYTELLING' : 'INTELIGÊNCIA_NEGÓCIOS'}</span>
+        <span>BUFFER_SEQUÊNCIA: {step}/21</span>
       </div>
     </section>
   );

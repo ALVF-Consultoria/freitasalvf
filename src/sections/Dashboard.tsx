@@ -11,22 +11,32 @@ const dashboardWords = [
   "Metaverso",
   "Storytelling",
   "HÁ 30 ANOS",
-  "B2B",
   "Educação e\nCuradoria",
-  "Inbound\nMarketing"
+  "B2B"
 ];
 
 interface DashboardProps {
   onNavigateToAI?: () => void;
   onNavigateToBlockchain?: () => void;
+  onNavigateToMetaverse?: () => void;
+  onNavigateToStorytelling?: () => void;
+  onNavigateToB2B?: () => void;
+  onNavigateToEducation?: () => void;
+  onNavigateToHeritage?: () => void;
 }
 
-export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain }: DashboardProps) => {
+export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateToMetaverse, onNavigateToStorytelling, onNavigateToB2B, onNavigateToEducation, onNavigateToHeritage }: DashboardProps) => {
   const [activeNodeNumber, setActiveNodeNumber] = useState<number | null>(null);
 
   const toggleNode = (e: React.MouseEvent, num: number) => {
     e.stopPropagation();
     setActiveNodeNumber((prev) => (prev === num ? null : num));
+  };
+
+  const playEnterSound = () => {
+    const audio = new Audio("/audios/enter-effect.mp3");
+    audio.volume = 0.4;
+    audio.play().catch(e => console.log("Audio play prevented:", e));
   };
 
   return (
@@ -55,14 +65,14 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain }: DashboardP
 
         {/* Container Holográfico Mestre (Estilo HUD Imersiva) */}
         <div className="relative p-16 md:p-28 rounded-[40px] z-10 group/container max-w-7xl w-full mx-auto">
-          
+
           {/* 1. Camada de Brilho de Fundo Sutil */}
           <div className="absolute inset-0 bg-blue-500/5 rounded-[40px] blur-sm -z-10" />
 
           {/* 2. Moldura HUD Mestra (Bordas Duplas e Glow) */}
           <div className="absolute inset-0 rounded-[40px] border-2 border-cyan-400/30 shadow-[0_0_20px_rgba(34,211,238,0.2)] pointer-events-none" />
           <div className="absolute inset-[-4px] rounded-[44px] border border-cyan-400/10 pointer-events-none" />
-          
+
           {/* Cantos Reforçados e Segmentados (Conforme Imagem) */}
           <div className="absolute -top-1 -left-1 w-24 h-24 border-t-4 border-l-4 border-cyan-400 rounded-tl-[44px] shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
           <div className="absolute -top-1 -right-1 w-24 h-24 border-t-4 border-r-4 border-cyan-400 rounded-tr-[44px] shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
@@ -81,17 +91,42 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain }: DashboardP
             ))}
           </div>
 
-          {/* Grid de Nodes */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 relative">
-            {/* Mapeamento especial para criar o flow em 'S' */}
-            {[0, 1, 2, 3, 7, 6, 5, 4].map((dataIndex, visualIndex) => {
+          <motion.div
+            variants={{
+              hidden: { opacity: 0 },
+              show: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.15,
+                  delayChildren: 0.5
+                }
+              }
+            }}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 relative"
+          >
+            {/* Mapeamento especial para 7 nodes */}
+            {[0, 1, 2, 3, 6, 5, 4].map((dataIndex, visualIndex) => {
               const word = dashboardWords[dataIndex];
               const nodeNumber = dataIndex + 1;
               const isAI = dataIndex === 0;
               const isBlockchain = dataIndex === 1;
+              const isMetaverse = dataIndex === 2;
+              const isStorytelling = dataIndex === 3;
+              const isHeritage = dataIndex === 4;
+              const isEducation = dataIndex === 5;
+              const isB2B = dataIndex === 6;
 
               return (
-                <div key={dataIndex} className="relative">
+                <motion.div
+                  key={dataIndex}
+                  variants={{
+                    hidden: { opacity: 0, scale: 0.8, y: 20 },
+                    show: { opacity: 1, scale: 1, y: 0 }
+                  }}
+                  className="relative"
+                >
                   <DashboardNode
                     word={word}
                     nodeNumber={nodeNumber}
@@ -100,7 +135,7 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain }: DashboardP
                     hasActiveSelection={activeNodeNumber !== null}
                     onSelect={(e) => toggleNode(e, nodeNumber)}
                   />
-                  
+
                   {/* Botão de Detalhes para Soluções IA */}
                   {isAI && activeNodeNumber === nodeNumber && (
                     <motion.button
@@ -108,11 +143,12 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain }: DashboardP
                       animate={{ opacity: 1, y: 0 }}
                       onClick={(e) => {
                         e.stopPropagation();
+                        playEnterSound();
                         onNavigateToAI?.();
                       }}
                       className="absolute -bottom-16 left-1/2 -translate-x-1/2 z-50 px-6 py-2 bg-cyan-400 text-black font-bold rounded-full text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(34,211,238,0.6)] hover:scale-110 active:scale-95 transition-all"
                     >
-                      Ver Detalhes
+                      Acessar
                     </motion.button>
                   )}
 
@@ -123,6 +159,7 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain }: DashboardP
                       animate={{ opacity: 1, y: 0 }}
                       onClick={(e) => {
                         e.stopPropagation();
+                        playEnterSound();
                         onNavigateToBlockchain?.();
                       }}
                       className="absolute -bottom-16 left-1/2 -translate-x-1/2 z-50 px-6 py-2 bg-amber-500 text-black font-bold rounded-full text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(245,158,11,0.6)] hover:scale-110 active:scale-95 transition-all"
@@ -130,10 +167,89 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain }: DashboardP
                       Acessar
                     </motion.button>
                   )}
-                </div>
+
+                  {/* Botão de Detalhes para Metaverso */}
+                  {isMetaverse && activeNodeNumber === nodeNumber && (
+                    <motion.button
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        playEnterSound();
+                        onNavigateToMetaverse?.();
+                      }}
+                      className="absolute -bottom-16 left-1/2 -translate-x-1/2 z-50 px-6 py-2 bg-blue-500 text-white font-bold rounded-full text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(59,130,246,0.6)] hover:scale-110 active:scale-95 transition-all"
+                    >
+                      Acessar
+                    </motion.button>
+                  )}
+
+                  {/* Botão de Detalhes para Storytelling */}
+                  {isStorytelling && activeNodeNumber === nodeNumber && (
+                    <motion.button
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        playEnterSound();
+                        onNavigateToStorytelling?.();
+                      }}
+                      className="absolute -bottom-16 left-1/2 -translate-x-1/2 z-50 px-6 py-2 bg-linear-to-r from-purple-500 to-blue-500 text-white font-bold rounded-full text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(168,85,247,0.6)] hover:scale-110 active:scale-95 transition-all"
+                    >
+                      Acessar
+                    </motion.button>
+                  )}
+
+                  {/* Botão de Detalhes para Educação */}
+                  {word.includes("Educação") && activeNodeNumber === nodeNumber && (
+                    <motion.button
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        playEnterSound();
+                        onNavigateToEducation?.();
+                      }}
+                      className="absolute -bottom-16 left-1/2 -translate-x-1/2 z-50 px-6 py-2 bg-indigo-500 text-white font-bold rounded-full text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(99,102,241,0.6)] hover:scale-110 active:scale-95 transition-all"
+                    >
+                      Acessar
+                    </motion.button>
+                  )}
+
+                  {/* Botão de Detalhes para B2B */}
+                  {word === "B2B" && activeNodeNumber === nodeNumber && (
+                    <motion.button
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        playEnterSound();
+                        onNavigateToB2B?.();
+                      }}
+                      className="absolute -bottom-16 left-1/2 -translate-x-1/2 z-50 px-6 py-2 bg-linear-to-r from-emerald-600 to-emerald-400 text-black font-bold rounded-full text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.6)] hover:scale-110 active:scale-95 transition-all"
+                    >
+                      Acessar
+                    </motion.button>
+                  )}
+                  {/* Botão de Detalhes para Heritage (30 Anos) */}
+                  {isHeritage && activeNodeNumber === nodeNumber && (
+                    <motion.button
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        playEnterSound();
+                        onNavigateToHeritage?.();
+                      }}
+                      className="absolute -bottom-16 left-1/2 -translate-x-1/2 z-50 px-6 py-2 bg-amber-600 text-white font-bold rounded-full text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(217,119,6,0.6)] hover:scale-110 active:scale-95 transition-all"
+                    >
+                      Acessar
+                    </motion.button>
+                  )}
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
       </motion.div>
     </section>

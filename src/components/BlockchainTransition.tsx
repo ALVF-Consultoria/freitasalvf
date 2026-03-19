@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
+import { VideoBackground } from "@/components/common/VideoBackground";
 
 interface BlockchainTransitionProps {
   onComplete: () => void;
@@ -16,9 +17,9 @@ export const BlockchainTransition = ({ onComplete }: BlockchainTransitionProps) 
     const video = videoRef.current;
     
     // Inicia a transição para a conclusão automaticamente perto do fim do vídeo
-    if (video.duration && video.currentTime > video.duration - 0.5) {
-      setStep(2); // Muda para o passo de saída para acionar o onExitComplete ou apenas para efeito
-      setTimeout(onComplete, 800); // Aguarda o tempo do zoom/fade
+    if (video.duration && video.currentTime > video.duration - 0.8) {
+      setStep(2); 
+      setTimeout(onComplete, 400); 
     }
   };
 
@@ -31,18 +32,16 @@ export const BlockchainTransition = ({ onComplete }: BlockchainTransitionProps) 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, scale: 8, filter: "blur(20px)" }}
-            transition={{ duration: 1.2, ease: "easeIn" }}
-            className="relative w-full h-screen flex items-center justify-center"
+            transition={{ duration: 0.8, ease: "easeIn" }}
+            className="absolute inset-0 w-full h-screen flex items-center justify-center"
           >
-            <video
+            <VideoBackground
               ref={videoRef}
-              autoPlay
-              playsInline
+              src="/videos/blockchin.mp4"
               onTimeUpdate={handleVideoTimeUpdate}
-              className="absolute inset-0 w-full h-full object-cover opacity-80"
-            >
-              <source src="/videos/blockchin.mp4" type="video/mp4" />
-            </video>
+              loop={false}
+              className="opacity-80"
+            />
           </motion.div>
         )}
       </AnimatePresence>

@@ -15,7 +15,6 @@ const hologramWords = [
   "Blockchain",
   "Metaverso",
   "Storytelling",
-  "Inbound\nMarketing",
   "B2B",
   "Educação e\nCuradoria",
   "HÁ 30 ANOS"
@@ -95,7 +94,7 @@ export const SvgAnimation = ({ isFrenetic = false, isGlitching = false }: SvgAni
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 1040 1024"
-        className="w-full h-full p-8 relative z-10 overflow-visible"
+        className="w-full h-full p-8 relative z-10 overflow-visible pointer-events-none"
       >
         {/* Camada Base: Contornos sutis */}
         {paths.map((p, i) => (

@@ -23,9 +23,16 @@ export const DashboardNode = ({
   // Memoize o ID para evitar mudanças em re-renders simples, mantendo o feeling técnico
   const nodeID = useMemo(() => `NODE_0x${Math.floor(Math.random() * 1000).toString(16).toUpperCase()}`, []);
 
+  const playHoverSound = () => {
+    const audio = new Audio("/audios/transition-efect.mp3");
+    audio.volume = 0.3;
+    audio.play().catch(e => console.log("Audio play prevented:", e));
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
+      onMouseEnter={playHoverSound}
       animate={{ 
         opacity: isSelected ? 1 : (hasActiveSelection ? 0.2 : 1), 
         scale: isSelected ? 1.15 : (hasActiveSelection ? 0.9 : 1),
@@ -90,9 +97,9 @@ export const DashboardNode = ({
       <div className="absolute top-3 right-6 flex flex-col items-end opacity-40 group-hover:opacity-100 transition-opacity">
         <div className="flex items-center gap-1.5">
           <span className="w-1 h-1 rounded-full bg-cyan-400 animate-ping" />
-          <span className="text-[7px] font-mono text-cyan-300 tracking-tighter">DATA_STREAM</span>
+          <span className="text-[7px] font-mono text-cyan-300 tracking-tighter">FLUXO_DADOS</span>
         </div>
-        <span className="text-[7px] font-mono text-white/40">{Math.floor(Math.random() * 99)}% LOAD</span>
+        <span className="text-[7px] font-mono text-white/40">{Math.floor(Math.random() * 99)}% CARGA</span>
       </div>
       
       <div className="absolute bottom-3 left-6 opacity-30 group-hover:opacity-100">
