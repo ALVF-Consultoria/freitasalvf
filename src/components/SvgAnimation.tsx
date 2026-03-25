@@ -11,13 +11,7 @@ interface SvgAnimationProps {
 }
 
 const hologramWords = [
-  "Soluções IA",
-  "Blockchain",
-  "Metaverso",
-  "Storytelling",
-  "B2B",
-  "Educação e\nCuradoria",
-  "HÁ 30 ANOS"
+  "Freitas ALVF\nSoluções Inovadoras",
 ];
 
 export const SvgAnimation = ({ isFrenetic = false, isGlitching = false }: SvgAnimationProps) => {

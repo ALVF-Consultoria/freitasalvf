@@ -182,7 +182,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
                 <h2 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter drop-shadow-[0_0_20px_rgba(34,211,238,0.5)]">
                   NAIA <span className="text-cyan-400">Avaliativa</span>
                 </h2>
-                <p className="text-cyan-400 font-mono text-xl md:text-2xl tracking-[0.4em] uppercase mt-2 opacity-80">Educação Inteligente</p>
+                <p className="text-cyan-400 font-mono text-xl md:text-2xl tracking-[0.4em] uppercase mt-2 opacity-80">Nano Agente Interface Autônoma</p>
               </motion.div>
               {step >= 2 && (
                 <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="max-w-3xl text-white/80 text-lg md:text-2xl italic font-light">

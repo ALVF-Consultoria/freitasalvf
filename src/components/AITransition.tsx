@@ -104,6 +104,14 @@ export const AITransition = ({ onComplete }: AITransitionProps) => {
             <h3 className="text-6xl md:text-9xl font-black text-white uppercase tracking-tighter drop-shadow-[0_0_30px_rgba(34,211,238,0.6)]">
               NA<span className="text-cyan-400 text-glow">IA</span>
             </h3>
+            <motion.p 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 0.8, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              className="mt-4 text-cyan-400/80 font-mono text-sm md:text-xl tracking-[0.3em] uppercase italic"
+            >
+              Nano Agente Interface Autônoma
+            </motion.p>
             
             <div className="mt-20 flex flex-col items-center gap-6">
               <motion.div

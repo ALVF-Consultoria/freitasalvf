@@ -10,7 +10,7 @@ export const storytellingLogs = [
     id: "log-02",
     subject: "PROVA DE CONCEITO",
     content: "Nossa jornada digital no YouTube é a materialização da nossa visão estratégica. Cada crônica é um elo na cadeia de valor que aproxima a marca do seu destino final.",
-    youtubeUrl: "https://www.youtube.com/@almirantefreitas/videos",
+    youtubeUrl: "https://www.youtube.com/@FreitasALVF/podcasts",
     videoId: "LWNONaXLxHI",
     start: 40,
     end: 160,
