@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { DashboardNode } from "../components/DashboardNode";
 import { ParticlesBackground } from "../components/ParticlesBackground";
+import { VideoBackground } from "../components/common/VideoBackground";
+import { NeuralConnectionSystem } from "../components/NeuralConnectionSystem";
 
 interface DashboardProps {
   onNavigateToAI?: () => void;
@@ -16,11 +18,27 @@ interface DashboardProps {
 }
 
 export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateToMetaverse, onNavigateToStorytelling, onNavigateToB2B, onNavigateToEducation, onNavigateToHeritage }: DashboardProps) => {
-  const [activeNodeNumber, setActiveNodeNumber] = useState<number | null>(null);
+  const [isVideoPaused, setIsVideoPaused] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  const toggleNode = (e: React.MouseEvent, num: number) => {
-    e.stopPropagation();
-    setActiveNodeNumber((prev) => (prev === num ? null : num));
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isMobile = windowWidth < 768;
+  const isTablet = windowWidth >= 768 && windowWidth < 1100;
+
+  const handleVideoTimeUpdate = () => {
+    if (!videoRef.current) return;
+    const video = videoRef.current;
+    if (video.duration && video.currentTime >= video.duration - 0.2) {
+      video.pause();
+      if (!isVideoPaused) setIsVideoPaused(true);
+    }
   };
 
   const playEnterSound = () => {
@@ -29,11 +47,114 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateTo
     audio.play().catch(e => console.log("Audio play prevented:", e));
   };
 
+  const nodeElements = useMemo(() => {
+    if (!isVideoPaused) return null;
+
+    const nodes = [
+      // LADO ESQUERDO (4 Nuvens - Aproximadas do centro)
+      {
+        id: 8, word: "NAIA", onNavigate: undefined,
+        pos: isMobile ? { top: "30%", left: "30%" } : (isTablet ? { top: "32%", left: "32%" } : { top: "15%", left: "35%" })
+      },
+      {
+        id: 7, word: "B2B", onNavigate: onNavigateToB2B,
+        pos: isMobile ? { top: "42%", left: "25%" } : (isTablet ? { top: "44%", left: "28%" } : { top: "32%", left: "25%" })
+      },
+      {
+        id: 5, word: "HÁ 30 ANOS", onNavigate: onNavigateToHeritage,
+        pos: isMobile ? { top: "58%", left: "25%" } : (isTablet ? { top: "56%", left: "28%" } : { top: "52%", left: "25%" })
+      },
+      {
+        id: 6, word: "Curadoria Educacional", onNavigate: onNavigateToEducation,
+        pos: isMobile ? { top: "70%", left: "30%" } : (isTablet ? { top: "68%", left: "32%" } : { top: "73%", left: "35%" })
+      },
+
+      // LADO DIREITO (4 Nuvens - Aproximadas do centro)
+      {
+        id: 1, word: "Soluções IA", onNavigate: onNavigateToAI,
+        pos: isMobile ? { top: "30%", left: "70%" } : (isTablet ? { top: "32%", left: "68%" } : { top: "15%", left: "65%" })
+      },
+      {
+        id: 2, word: "Blockchain", onNavigate: onNavigateToBlockchain,
+        pos: isMobile ? { top: "42%", left: "75%" } : (isTablet ? { top: "44%", left: "72%" } : { top: "32%", left: "75%" })
+      },
+      {
+        id: 3, word: "Metaverso", onNavigate: onNavigateToMetaverse,
+        pos: isMobile ? { top: "58%", left: "75%" } : (isTablet ? { top: "56%", left: "72%" } : { top: "52%", left: "75%" })
+      },
+      {
+        id: 4, word: "Storytelling", onNavigate: onNavigateToStorytelling,
+        pos: isMobile ? { top: "70%", left: "70%" } : (isTablet ? { top: "68%", left: "68%" } : { top: "73%", left: "65%" })
+      }
+    ];
+
+    return {
+      nodes,
+      elements: nodes.map((node, visualIndex) => {
+        const nodeNumber = node.id;
+
+        return (
+          <motion.div
+            key={node.id}
+            initial={{
+              top: "50%",
+              left: "50%",
+              opacity: 0,
+              scale: 0
+            }}
+            animate={{
+              top: node.pos.top,
+              left: node.pos.left,
+              opacity: selectedId ? (selectedId === node.id ? 1 : 0) : 1,
+              scale: selectedId ? (selectedId === node.id ? 12 : 0) : 1,
+              filter: selectedId
+                ? (selectedId === node.id ? "blur(40px)" : "blur(20px)")
+                : "blur(0px)"
+            }}
+            exit={{ opacity: 0, scale: 0, filter: "blur(10px)" }}
+            transition={{
+              top: { duration: 1.2, ease: "easeOut" },
+              left: { duration: 1.2, ease: "easeOut" },
+              scale: { duration: selectedId === node.id ? 1.5 : 0.8, ease: "easeIn" },
+              opacity: { duration: 0.8 },
+              default: {
+                duration: 0.8,
+                delay: selectedId ? 0 : visualIndex * 0.15,
+                type: "spring",
+                stiffness: 80,
+                damping: 12
+              }
+            }}
+            className="absolute z-20 pointer-events-auto transform -translate-x-1/2 -translate-y-1/2 w-[98%] max-w-[250px] sm:max-w-[500px] md:max-w-[1000px]"
+          >
+            <DashboardNode
+              word={node.word}
+              nodeNumber={nodeNumber}
+              visualIndex={visualIndex}
+              isSelected={false}
+              hasActiveSelection={false}
+              onSelect={(e) => {
+                if (selectedId || !node.onNavigate) return;
+                e.stopPropagation();
+                playEnterSound();
+                setSelectedId(node.id);
+                setTimeout(() => {
+                  if (node.onNavigate) node.onNavigate();
+                }, 1300);
+              }}
+            />
+          </motion.div>
+        );
+      })
+    };
+  }, [isVideoPaused, isMobile, isTablet, selectedId, onNavigateToAI, onNavigateToBlockchain, onNavigateToMetaverse, onNavigateToStorytelling, onNavigateToEducation, onNavigateToHeritage, onNavigateToB2B]);
+
+  const dashboardContainerRef = useRef<HTMLDivElement>(null);
+
   return (
     <section
       id="dashboard"
       className="relative min-h-screen w-full flex flex-col items-center justify-center bg-[#050505] py-10 px-8 overflow-hidden"
-      onClick={() => setActiveNodeNumber(null)}
     >
       {/* Sistema de Partículas Ambiente */}
       <div className="absolute inset-0 pointer-events-none opacity-40">
@@ -46,105 +167,47 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateTo
       {/* Núcleo Central Pulsante (Sutil) */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/5 blur-[80px] rounded-full animate-pulse pointer-events-none" />
 
+      {/* 4. Conteúdo Central - Vídeo Herdado do Hero (Fundo) */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="max-w-7xl w-full z-10"
+        key="video-brain"
+        animate={{
+          scale: selectedId ? (isMobile ? 1.2 : 1.5) : 1,
+          opacity: selectedId ? 0 : 1,
+          filter: selectedId ? "blur(20px)" : "blur(0px)"
+        }}
+        transition={{ duration: 1, ease: "easeIn" }}
+        style={{
+          willChange: "transform, opacity, filter",
+          backfaceVisibility: "hidden"
+        }}
+        className="absolute inset-0 z-0 w-full h-full bg-black overflow-hidden pointer-events-none"
       >
-
-        {/* Container Holográfico Mestre (Estilo HUD Imersiva) */}
-        <div className="relative p-16 md:p-28 rounded-[40px] z-10 group/container max-w-7xl w-full mx-auto">
-
-          {/* 1. Camada de Brilho de Fundo Sutil */}
-          <div className="absolute inset-0 bg-blue-500/5 rounded-[40px] blur-sm -z-10" />
-
-          {/* 2. Moldura HUD Mestra (Bordas Duplas e Glow) */}
-          <div className="absolute inset-0 rounded-[40px] border-2 border-cyan-400/30 shadow-[0_0_20px_rgba(34,211,238,0.2)] pointer-events-none" />
-          <div className="absolute inset-[-4px] rounded-[44px] border border-cyan-400/10 pointer-events-none" />
-
-          {/* Cantos Reforçados e Segmentados (Conforme Imagem) */}
-          <div className="absolute -top-1 -left-1 w-24 h-24 border-t-4 border-l-4 border-cyan-400 rounded-tl-[44px] shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
-          <div className="absolute -top-1 -right-1 w-24 h-24 border-t-4 border-r-4 border-cyan-400 rounded-tr-[44px] shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
-          <div className="absolute -bottom-1 -left-1 w-24 h-24 border-b-4 border-l-4 border-cyan-400 rounded-bl-[44px] shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
-          <div className="absolute -bottom-1 -right-1 w-24 h-24 border-b-4 border-r-4 border-cyan-400 rounded-br-[44px] shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
-
-          {/* Marcadores Laterais (Ticks / Ruler Style) */}
-          <div className="absolute left-[-20px] top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-50">
-            {[...Array(12)].map((_, i) => (
-              <div key={i} className={`h-px bg-cyan-400 ${i % 3 === 0 ? 'w-4' : 'w-2'}`} />
-            ))}
-          </div>
-          <div className="absolute right-[-20px] top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-50">
-            {[...Array(12)].map((_, i) => (
-              <div key={i} className={`h-px bg-cyan-400 ${i % 3 === 0 ? 'w-4' : 'w-2'}`} />
-            ))}
-          </div>
-
-          <motion.div
-            variants={{
-              hidden: { opacity: 0 },
-              show: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.15,
-                  delayChildren: 0.5
-                }
-              }
-            }}
-            initial="hidden"
-            animate="show"
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 relative"
-          >
-            {[
-              { id: 1, word: "Soluções IA", onNavigate: onNavigateToAI, color: "bg-cyan-400", shadow: "shadow-[0_0_20px_rgba(34,211,238,0.6)]" },
-              { id: 2, word: "Blockchain", onNavigate: onNavigateToBlockchain, color: "bg-amber-500", shadow: "shadow-[0_0_20px_rgba(245,158,11,0.6)]" },
-              { id: 3, word: "Metaverso", onNavigate: onNavigateToMetaverse, color: "bg-blue-500", shadow: "shadow-[0_0_20px_rgba(59,130,246,0.6)]" },
-              { id: 4, word: "Storytelling", onNavigate: onNavigateToStorytelling, color: "bg-linear-to-r from-purple-500 to-blue-500", shadow: "shadow-[0_0_20px_rgba(168,85,247,0.6)]" },
-              { id: 6, word: "Curadoria Educacional", onNavigate: onNavigateToEducation, color: "bg-indigo-500", shadow: "shadow-[0_0_20px_rgba(99,102,241,0.6)]" },
-              { id: 5, word: "HÁ 30 ANOS", onNavigate: onNavigateToHeritage, color: "bg-amber-600", shadow: "shadow-[0_0_20px_rgba(217,119,6,0.6)]" },
-              { id: 7, word: "B2B", onNavigate: onNavigateToB2B, color: "bg-linear-to-r from-emerald-600 to-emerald-400", shadow: "shadow-[0_0_20px_rgba(16,185,129,0.6)]", textClass: "text-black" }
-            ].map((node, visualIndex) => {
-              const nodeNumber = node.id;
-              
-              return (
-                <motion.div
-                  key={node.id}
-                  variants={{
-                    hidden: { opacity: 0, scale: 0.8, y: 20 },
-                    show: { opacity: 1, scale: 1, y: 0 }
-                  }}
-                  className="relative"
-                >
-                  <DashboardNode
-                    word={node.word}
-                    nodeNumber={nodeNumber}
-                    visualIndex={visualIndex}
-                    isSelected={activeNodeNumber === nodeNumber}
-                    hasActiveSelection={activeNodeNumber !== null}
-                    onSelect={(e) => toggleNode(e, nodeNumber)}
-                  />
-
-                  {activeNodeNumber === nodeNumber && (
-                    <motion.button
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        playEnterSound();
-                        node.onNavigate?.();
-                      }}
-                      className={`absolute -bottom-16 left-1/2 z-50 px-6 py-2 ${node.color} ${node.textClass || 'text-white'} font-bold rounded-full text-xs uppercase tracking-widest ${node.shadow} hover:scale-110 active:scale-95 transition-all -translate-x-1/2`}
-                    >
-                      Acessar
-                    </motion.button>
-                  )}
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </div>
+        <VideoBackground
+          ref={videoRef}
+          src="/videos/cerebro-engravatado-rodando.mp4"
+          onTimeUpdate={handleVideoTimeUpdate}
+          loop={false}
+          muted={false}
+          className="w-full h-full object-cover mix-blend-screen drop-shadow-[0_0_80px_rgba(59,130,246,0.4)]"
+        />
+        {/* Brilho extra atrás do vídeo para profundidade total */}
+        <div className="absolute inset-0 bg-blue-600/10 blur-[200px] rounded-full -z-10" />
       </motion.div>
+
+      <div className="relative w-full h-[85dvh] max-w-[1400px] flex items-center justify-center pointer-events-none mx-auto -mt-10 z-10" ref={dashboardContainerRef}>
+        {/* A Teia Neuronal Global conectando o centro aos nós */}
+        {isVideoPaused && !selectedId && nodeElements && (
+          <NeuralConnectionSystem
+            nodes={nodeElements.nodes.map(n => ({ id: n.id, top: n.pos.top, left: n.pos.left }))}
+            containerRef={dashboardContainerRef}
+          />
+        )}
+
+        {/* As Nuvens de Pensamentos (Nodes) */}
+        <AnimatePresence>
+          {nodeElements?.elements}
+        </AnimatePresence>
+      </div>
     </section>
   );
 };

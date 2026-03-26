@@ -31,9 +31,9 @@ export const Hero = ({ onTransitionComplete }: HeroProps) => {
 
     setPhase("frenetic");
 
-    // Transição para o vídeo após 1.8 segundos de frenesi
+    // Transição para o dashboard após o frenesi
     setTimeout(() => {
-      setPhase("video");
+      onTransitionComplete?.();
     }, 1800);
   };
 
@@ -75,39 +75,32 @@ export const Hero = ({ onTransitionComplete }: HeroProps) => {
   };
 
   return (
-    <motion.section
+    <section
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHoveringBg(true)}
       onMouseLeave={() => setIsHoveringBg(false)}
-      exit={{
-        opacity: 0,
-        scale: 8,
-        filter: "blur(20px)"
-      }}
-      transition={{
-        duration: 1.2,
-        ease: "easeIn"
-      }}
-      className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-[#050505]"
+      className={`relative h-screen w-full flex items-center justify-center overflow-hidden bg-[#050505] ${phase === "frenetic" ? 'pointer-events-none' : ''}`}
     >
       {/* 1. Imagem de Fundo (Camada 0 - Base Escura/P&B) */}
       <motion.div
         animate={{
-          opacity: phase === "frenetic" ? 0.05 : 0.15,
-          scale: isGlobalGlitch ? 1.15 : (phase === "frenetic" ? 1.05 : 1.1),
-          filter: isGlobalGlitch
-            ? "grayscale(100%) brightness(1.5) contrast(150%)"
-            : "grayscale(100%) brightness(0.3) contrast(100%)"
+          opacity: phase === "frenetic" ? 1 : 0.15,
+          scale: 1,
+          filter: phase === "frenetic" 
+             ? "grayscale(0%) brightness(1) contrast(100%)"
+             : isGlobalGlitch
+                ? "grayscale(100%) brightness(1.5) contrast(150%)"
+                : "grayscale(100%) brightness(0.3) contrast(100%)"
         }}
-        transition={{ duration: isGlobalGlitch ? 0.05 : 0.8 }}
+        transition={{ duration: phase === "frenetic" ? 0 : (isGlobalGlitch ? 0.05 : 0.8) }}
         className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none"
       >
         <Image
           src="/images/Engravatado-sem-fundo.png"
           alt="Hero Background"
           fill
-          className="object-contain object-center"
+          className="object-cover object-center"
           priority
         />
       </motion.div>
@@ -155,38 +148,16 @@ export const Hero = ({ onTransitionComplete }: HeroProps) => {
 
       {/* 4. Conteúdo Central (Camada 10/20) */}
       <AnimatePresence mode="wait">
-        {phase !== "video" ? (
+        {phase !== "video" && (
           <motion.div
             key="svg-brain"
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.2, filter: "blur(10px)" }}
+            exit={{ opacity: 0, filter: "blur(10px)" }}
             transition={{ duration: 0.8 }}
             onClick={handleBrainClick}
             className="relative z-10 w-full max-w-3xl transform scale-75 md:scale-100 flex items-center justify-center cursor-pointer"
           >
             <SvgAnimation isFrenetic={phase === "frenetic"} isGlitching={isGlobalGlitch} />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="video-brain"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            style={{
-              willChange: "transform, opacity, filter",
-              backfaceVisibility: "hidden"
-            }}
-            className="absolute inset-0 z-20 w-screen h-screen bg-black overflow-hidden"
-          >
-            <VideoBackground
-              ref={videoRef}
-              src="/videos/cerebro-engravatado-rodando.mp4"
-              onTimeUpdate={handleVideoTimeUpdate}
-              loop={false}
-              muted={false}
-              className="w-full h-full object-cover mix-blend-screen drop-shadow-[0_0_80px_rgba(59,130,246,0.4)]"
-            />
-            {/* Brilho extra atrás do vídeo para profundidade total */}
-            <div className="absolute inset-0 bg-blue-600/10 blur-[200px] rounded-full -z-10" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -217,6 +188,6 @@ export const Hero = ({ onTransitionComplete }: HeroProps) => {
           />
         )}
       </AnimatePresence>
-    </motion.section>
+    </section>
   );
 };

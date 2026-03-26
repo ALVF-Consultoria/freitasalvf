@@ -34,16 +34,13 @@ export default function Home() {
       </AnimatePresence>
 
       {!isAppLoading && (
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
         {activeSection === "hero" && (
           <motion.div
             key="hero-section"
-            exit={{
-              opacity: 0,
-              scale: 1.5,
-              filter: "blur(20px)"
-            }}
-            transition={{ duration: 1, ease: "easeIn" }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="absolute inset-0 w-full h-full"
           >
             <Hero onTransitionComplete={() => setActiveSection("dashboard")} />
           </motion.div>
@@ -52,10 +49,11 @@ export default function Home() {
         {activeSection === "dashboard" && (
           <motion.div
             key="dashboard-section"
-            initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, scale: 1.2, filter: "blur(20px)" }}
-            transition={{ duration: 1.2, ease: "circOut" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="absolute inset-0 w-full h-full"
           >
             <Dashboard
               onNavigateToAI={() => setActiveSection("ai-transition")}
