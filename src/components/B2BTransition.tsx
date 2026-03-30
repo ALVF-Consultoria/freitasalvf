@@ -40,7 +40,7 @@ export const B2BTransition = ({ onComplete }: B2BTransitionProps) => {
 
     window.addEventListener("wheel", handleScroll);
     return () => window.removeEventListener("wheel", handleScroll);
-  }, []);
+  }, [step]);
 
   return (
     <div className="fixed inset-0 z-100 bg-[#020617] flex items-center justify-center overflow-hidden px-10">

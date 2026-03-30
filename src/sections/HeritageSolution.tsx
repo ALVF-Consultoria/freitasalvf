@@ -16,7 +16,7 @@ export const HeritageSolution = ({ onBack }: HeritageSolutionProps) => {
   const [step, setStep] = useState(0);
   const lastScrollTime = useRef(0);
   const totalEvents = heritageContent.timeline.length;
-  const totalSteps = totalEvents + 2; // Pillars + Timeline + Skills
+  const totalSteps = totalEvents + 3; // Pillars + Timeline + Skills + LinkedIn
 
   useEffect(() => {
     if (viewMode === "macro") {
@@ -33,14 +33,13 @@ export const HeritageSolution = ({ onBack }: HeritageSolutionProps) => {
       if (viewMode !== "detail") return;
       const now = Date.now();
       if (now - lastScrollTime.current > 1200) {
+        if (direction === "next" && step === totalSteps - 1) {
+          onBack();
+          return;
+        }
+
         setStep((prev) => {
-          if (direction === "next") {
-            if (prev === totalSteps - 1) {
-              onBack();
-              return prev;
-            }
-            return prev + 1;
-          }
+          if (direction === "next") return prev + 1;
           if (direction === "prev" && prev > 0) return prev - 1;
           return prev;
         });
@@ -55,7 +54,7 @@ export const HeritageSolution = ({ onBack }: HeritageSolutionProps) => {
 
     window.addEventListener("wheel", handleScroll);
     return () => window.removeEventListener("wheel", handleScroll);
-  }, [viewMode, totalSteps, onBack]);
+  }, [viewMode, totalSteps, onBack, step]);
 
   return (
     <section className="relative h-screen w-full bg-[#050505] overflow-hidden flex items-center justify-center">
@@ -182,7 +181,44 @@ export const HeritageSolution = ({ onBack }: HeritageSolutionProps) => {
                   </div>
                 </motion.div>
               )}
+
+              {step === totalEvents + 2 && (
+                <motion.div
+                  key="linkedin-step"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.2 }}
+                  className="flex flex-col items-center justify-center gap-12"
+                >
+                  <div className="flex flex-col items-center gap-6">
+                    <span className="text-xl text-amber-500 font-mono uppercase tracking-[1em] font-bold">LEGADO DIGITAL</span>
+                    <div className="w-48 h-px bg-amber-500/50" />
+                  </div>
+
+                  <motion.a
+                    href="https://www.linkedin.com/in/alvf01/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="group flex flex-col md:flex-row items-center gap-8 py-10 px-16 border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/20 transition-all cursor-pointer shadow-[0_0_100px_rgba(245,158,11,0.1)] rounded-sm"
+                  >
+                    <div className="flex flex-col items-center md:items-start text-center md:text-left transition-all">
+                      <span className="text-amber-500 font-mono text-xs uppercase tracking-[0.5em] font-bold mb-2">CONSTRUA SEU FUTURO</span>
+                      <span className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase group-hover:text-amber-400">CONECTE-SE FREITAS ALVF</span>
+                    </div>
+                    <div className="w-20 h-20 border-2 border-amber-500/30 flex items-center justify-center rounded-full group-hover:border-amber-400 group-hover:shadow-[0_0_50px_rgba(245,158,11,0.3)] transition-all">
+                      <svg viewBox="0 0 24 24" className="w-10 h-10 fill-amber-500 group-hover:fill-amber-400 transition-colors" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                      </svg>
+                    </div>
+                  </motion.a>
+
+                  <p className="text-white/20 font-mono text-[10px] uppercase tracking-widest mt-8">SCROLL PARA CONCLUIR JORNADA</p>
+                </motion.div>
+              )}
             </AnimatePresence>
+
           </motion.div>
         )}
       </AnimatePresence>

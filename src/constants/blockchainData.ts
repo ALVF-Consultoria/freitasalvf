@@ -78,3 +78,42 @@ export const ecosystemPlatforms = [
     ]
   }
 ];
+
+export const solanaImmersionData = {
+  hero: {
+    title: "SOLANA ECOSYSTEM",
+    subtitle: "A Fronteira da Performance Web3",
+    metrics: [
+      { label: "LATENCY", value: "400MS", detail: "SUB-SECOND FINALITY" },
+      { label: "TX_COST", value: "<$0.001", detail: "AVERAGE FEE" },
+      { label: "THROUGHPUT", value: "65K+", detail: "TPS CAPACITY" }
+    ]
+  },
+  pillars: [
+    {
+      id: "speed",
+      title: "VELOCIDADE RADICAL",
+      description: "Otimização via Proof of History (PoH), permitindo que a rede processe transações em paralelo sem gargalos de consenso.",
+      tech: "Gulf Stream & Sealevel"
+    },
+    {
+      id: "scale",
+      title: "ESCALA INFINITA",
+      description: "Arquitetura projetada para acompanhar a Lei de Moore, escalando o throughput conforme o hardware evolui.",
+      tech: "Turbine & Cloudbreak"
+    },
+    {
+      id: "adoption",
+      title: "ADOÇÃO REAL",
+      description: "Infraestrutura pronta para pagamentos globais, NFTs e DeFi de alta frequência com experiência de usuário Web2.",
+      tech: "Solana Pay & Actions"
+    }
+  ],
+  ecosystem: [
+    { name: "JUPITER", role: "Liquidez Agregada" },
+    { name: "HELIUM", label: "DePIN Infrastructure" },
+    { name: "HÉLIUS", role: "RPC/Developer Tools" },
+    { name: "JITO", label: "MEV Optimization" }
+  ]
+};
+

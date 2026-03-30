@@ -9,6 +9,7 @@ import { FeatureStep } from "../components/blockchain/FeatureStep";
 import { TopologyStep } from "../components/blockchain/TopologyStep";
 import { AnalysisStep } from "../components/blockchain/AnalysisStep";
 import { SloganStep } from "../components/blockchain/SloganStep";
+import { SolanaStep } from "../components/blockchain/SolanaStep";
 import { ecosystemPlatforms } from "../constants/blockchainData";
 
 interface BlockchainSolutionProps {
@@ -19,7 +20,7 @@ export const BlockchainSolution = ({ onBack }: BlockchainSolutionProps) => {
   const [step, setStep] = useState(1);
   const [showConnections, setShowConnections] = useState(false);
   const lastScrollTime = useRef(0);
-  const totalSteps = 12;
+  const totalSteps = 15;
 
   // Gerenciador de Scroll para a Timeline Vertical
   useEffect(() => {
@@ -85,7 +86,8 @@ export const BlockchainSolution = ({ onBack }: BlockchainSolutionProps) => {
           {(step >= 3 && step <= 6) && <FeatureStep step={step} />}
           {step === 7 && <TopologyStep showConnections={showConnections} />}
           {(step >= 8 && step <= 11) && <AnalysisStep step={step} />}
-          {step === 12 && <SloganStep onBack={onBack} />}
+          {(step >= 12 && step <= 14) && <SolanaStep step={step} />}
+          {step === 15 && <SloganStep onBack={onBack} />}
         </AnimatePresence>
       </div>
 

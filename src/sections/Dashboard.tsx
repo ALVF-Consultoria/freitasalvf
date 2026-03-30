@@ -15,9 +15,10 @@ interface DashboardProps {
   onNavigateToB2B?: () => void;
   onNavigateToEducation?: () => void;
   onNavigateToHeritage?: () => void;
+  onNavigateToNaia?: () => void;
 }
 
-export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateToMetaverse, onNavigateToStorytelling, onNavigateToB2B, onNavigateToEducation, onNavigateToHeritage }: DashboardProps) => {
+export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateToMetaverse, onNavigateToStorytelling, onNavigateToB2B, onNavigateToEducation, onNavigateToHeritage, onNavigateToNaia }: DashboardProps) => {
   const [isVideoPaused, setIsVideoPaused] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
@@ -53,38 +54,38 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateTo
     const nodes = [
       // LADO ESQUERDO (4 Nuvens - Aproximadas do centro)
       {
-        id: 8, word: "NAIA", onNavigate: undefined,
-        pos: isMobile ? { top: "30%", left: "30%" } : (isTablet ? { top: "32%", left: "32%" } : { top: "15%", left: "35%" })
+        id: 6, word: "Curadoria\nEducacional", onNavigate: onNavigateToEducation,
+        pos: isMobile ? { top: "30%", left: "30%" } : (isTablet ? { top: "34%", left: "34%" } : { top: "18%", left: "33%" })
       },
       {
-        id: 7, word: "B2B", onNavigate: onNavigateToB2B,
-        pos: isMobile ? { top: "42%", left: "25%" } : (isTablet ? { top: "44%", left: "28%" } : { top: "32%", left: "25%" })
+        id: 8, word: "NAIA", onNavigate: onNavigateToNaia,
+        pos: isMobile ? { top: "42%", left: "25%" } : (isTablet ? { top: "45%", left: "30%" } : { top: "34%", left: "28%" })
       },
       {
         id: 5, word: "HÁ 30 ANOS", onNavigate: onNavigateToHeritage,
-        pos: isMobile ? { top: "58%", left: "25%" } : (isTablet ? { top: "56%", left: "28%" } : { top: "52%", left: "25%" })
+        pos: isMobile ? { top: "58%", left: "25%" } : (isTablet ? { top: "55%", left: "30%" } : { top: "52%", left: "28%" })
       },
       {
-        id: 6, word: "Curadoria Educacional", onNavigate: onNavigateToEducation,
-        pos: isMobile ? { top: "70%", left: "30%" } : (isTablet ? { top: "68%", left: "32%" } : { top: "73%", left: "35%" })
+        id: 7, word: "B2B", onNavigate: onNavigateToB2B,
+        pos: isMobile ? { top: "70%", left: "30%" } : (isTablet ? { top: "66%", left: "34%" } : { top: "71%", left: "30%" })
       },
 
       // LADO DIREITO (4 Nuvens - Aproximadas do centro)
       {
         id: 1, word: "Soluções IA", onNavigate: onNavigateToAI,
-        pos: isMobile ? { top: "30%", left: "70%" } : (isTablet ? { top: "32%", left: "68%" } : { top: "15%", left: "65%" })
+        pos: isMobile ? { top: "30%", left: "70%" } : (isTablet ? { top: "34%", left: "66%" } : { top: "18%", left: "67%" })
       },
       {
         id: 2, word: "Blockchain", onNavigate: onNavigateToBlockchain,
-        pos: isMobile ? { top: "42%", left: "75%" } : (isTablet ? { top: "44%", left: "72%" } : { top: "32%", left: "75%" })
+        pos: isMobile ? { top: "42%", left: "75%" } : (isTablet ? { top: "45%", left: "70%" } : { top: "34%", left: "72%" })
       },
       {
         id: 3, word: "Metaverso", onNavigate: onNavigateToMetaverse,
-        pos: isMobile ? { top: "58%", left: "75%" } : (isTablet ? { top: "56%", left: "72%" } : { top: "52%", left: "75%" })
+        pos: isMobile ? { top: "58%", left: "75%" } : (isTablet ? { top: "55%", left: "70%" } : { top: "52%", left: "72%" })
       },
       {
         id: 4, word: "Storytelling", onNavigate: onNavigateToStorytelling,
-        pos: isMobile ? { top: "70%", left: "70%" } : (isTablet ? { top: "68%", left: "68%" } : { top: "73%", left: "65%" })
+        pos: isMobile ? { top: "70%", left: "70%" } : (isTablet ? { top: "66%", left: "66%" } : { top: "71%", left: "70%" })
       }
     ];
 
@@ -125,7 +126,7 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateTo
                 damping: 12
               }
             }}
-            className="absolute z-20 pointer-events-auto transform -translate-x-1/2 -translate-y-1/2 w-[98%] max-w-[250px] sm:max-w-[500px] md:max-w-[1000px]"
+            className="absolute z-20 pointer-events-none transform -translate-x-1/2 -translate-y-1/2 w-[98%] max-w-[250px] sm:max-w-[450px] md:max-w-[800px]"
           >
             <DashboardNode
               word={node.word}
@@ -147,7 +148,7 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateTo
         );
       })
     };
-  }, [isVideoPaused, isMobile, isTablet, selectedId, onNavigateToAI, onNavigateToBlockchain, onNavigateToMetaverse, onNavigateToStorytelling, onNavigateToEducation, onNavigateToHeritage, onNavigateToB2B]);
+  }, [isVideoPaused, isMobile, isTablet, selectedId, onNavigateToAI, onNavigateToBlockchain, onNavigateToMetaverse, onNavigateToStorytelling, onNavigateToEducation, onNavigateToHeritage, onNavigateToB2B, onNavigateToNaia]);
 
   const dashboardContainerRef = useRef<HTMLDivElement>(null);
 

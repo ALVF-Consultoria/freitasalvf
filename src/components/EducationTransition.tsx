@@ -40,7 +40,7 @@ export const EducationTransition = ({ onComplete }: EducationTransitionProps) =>
 
     window.addEventListener("wheel", handleScroll);
     return () => window.removeEventListener("wheel", handleScroll);
-  }, []);
+  }, [step]);
 
   return (
     <div className="fixed inset-0 z-100 bg-[#050505] flex items-center justify-center overflow-hidden px-10">

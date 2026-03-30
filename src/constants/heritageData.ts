@@ -15,7 +15,7 @@ export const heritageContent = {
     {
       year: "1994",
       title: "Preceder, Guiar e Liderar",
-      description: "Técnico em Processamento de Dados e Mecanografia pela Escola Delta. Início da liderança profissional.",
+      description: "Forças Especiais do Exercito Brasileiro (APrec 301 - SLOP 1054 - FAI 60260). Técnico em Processamento de Dados e Mecanografia pela Escola Delta. Início da liderança profissional.",
       tag: "LIDERANÇA"
     },
     {

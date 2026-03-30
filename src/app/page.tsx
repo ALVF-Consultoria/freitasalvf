@@ -18,12 +18,13 @@ import { BlockchainSolution } from "@/sections/BlockchainSolution";
 import { MetaverseSolution } from "@/sections/MetaverseSolution";
 import { HeritageTransition } from "@/components/HeritageTransition";
 import { HeritageSolution } from "@/sections/HeritageSolution";
+import { DashboardToNaia } from "@/sections/DashboardToNaia";
 import { BackgroundMusic } from "@/components/common/BackgroundMusic";
 import { LoadingCurtain } from "@/components/common/LoadingCurtain";
 
 export default function Home() {
   const [isAppLoading, setIsAppLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState<"hero" | "dashboard" | "ai-transition" | "ai-solution" | "blockchain-transition" | "blockchain-solution" | "metaverse-transition" | "metaverse-solution" | "storytelling-transition" | "storytelling-solution" | "b2b-transition" | "b2b-solution" | "education-transition" | "education-solution" | "heritage-transition" | "heritage-solution">("hero");
+  const [activeSection, setActiveSection] = useState<"hero" | "dashboard" | "ai-transition" | "ai-solution" | "blockchain-transition" | "blockchain-solution" | "metaverse-transition" | "metaverse-solution" | "storytelling-transition" | "storytelling-solution" | "b2b-transition" | "b2b-solution" | "education-transition" | "education-solution" | "heritage-transition" | "heritage-solution" | "dashboard-naia">("hero");
 
   return (
     <main className="min-h-screen bg-[#050505] overflow-hidden">
@@ -63,6 +64,7 @@ export default function Home() {
               onNavigateToB2B={() => setActiveSection("b2b-transition")}
               onNavigateToEducation={() => setActiveSection("education-transition")}
               onNavigateToHeritage={() => setActiveSection("heritage-transition")}
+              onNavigateToNaia={() => setActiveSection("dashboard-naia")}
             />
           </motion.div>
         )}
@@ -232,6 +234,18 @@ export default function Home() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <HeritageSolution onBack={() => setActiveSection("dashboard")} />
+          </motion.div>
+        )}
+
+        {activeSection === "dashboard-naia" && (
+          <motion.div
+            key="dashboard-naia-section"
+            initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <DashboardToNaia onBack={() => setActiveSection("dashboard")} />
           </motion.div>
         )}
       </AnimatePresence>

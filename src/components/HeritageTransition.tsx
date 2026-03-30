@@ -100,7 +100,7 @@ export const HeritageTransition = ({ onComplete }: HeritageTransitionProps) => {
               ESTEVE LÁ, FEZ ACONTECER
             </span>
             <h3 className="text-6xl md:text-9xl font-black text-white uppercase tracking-tighter">
-              30 ANOS <br /><span className="text-amber-500 text-glow-amber">DE LEGADO</span>
+              + DE 30 ANOS <br /><span className="text-amber-500 text-glow-amber">DE LEGADO</span>
             </h3>
             
             <div className="mt-16 flex flex-col items-center gap-6">

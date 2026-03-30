@@ -20,8 +20,12 @@ export const DashboardNode = ({
   hasActiveSelection = false,
   onSelect
 }: DashboardNodeProps) => {
-  // Memoize o ID para evitar mudanças em re-renders simples
-  const nodeID = useMemo(() => `NODE_0x${Math.floor(Math.random() * 1000).toString(16).toUpperCase()}`, []);
+  // O nodeNumber é usado aqui para gerar um ID determinístico, satisfazendo o lint de uso
+  const nodeID = useMemo(() => `0x${(nodeNumber * 123 + 456).toString(16).toUpperCase()}`, [nodeNumber]);
+  // Novo path de nuvem (Cloud Computing style - Longa e suave conforme imagem)
+  const cloudPath = useMemo(() => {
+    return "M25,60 Q25,38 60,38 Q75,23 110,23 Q145,23 160,38 Q200,38 200,60 Q200,87 170,87 L55,87 Q25,87 25,60 Z";
+  }, []);
 
   const playHoverSound = () => {
     const audio = new Audio("/audios/transition-efect.mp3");
@@ -29,43 +33,16 @@ export const DashboardNode = ({
     audio.play().catch(e => console.log("Audio play prevented:", e));
   };
 
-  // Gerar um caminho de nuvem com 12 curvaturas (scallops)
-  const cloudPath = useMemo(() => {
-    const numScallops = 15;
-    const rx = 350; // Aumentado para evitar que pareça uma bola (mais largura)
-    const ry = 110; // Mantendo o ajuste manual do usuário
-    const centerX = 150; // Re-centrado para novo viewBox 300x200
-    const centerY = 100; // Re-centrado para novo viewBox 300x200
-    const amplitude = 25; // Gominhos mais marcados e maiores conforme pedido
-
-    let path = `M ${centerX + rx},${centerY} `;
-
-    for (let i = 0; i < numScallops; i++) {
-      const theta1 = (i / numScallops) * Math.PI * 2;
-      const theta2 = ((i + 1) / numScallops) * Math.PI * 2;
-      const midTheta = (theta1 + theta2) / 2;
-
-      const x2 = centerX + Math.cos(theta2) * rx;
-      const y2 = centerY + Math.sin(theta2) * ry;
-
-      // Ponto de controle puxado para fora para criar o efeito arredondado (gibi)
-      // Aumentamos o raio no ponto médio para criar a "barriga" da curva
-      const cx = centerX + Math.cos(midTheta) * (rx + amplitude);
-      const cy = centerY + Math.sin(midTheta) * (ry + amplitude);
-
-      path += `Q ${cx},${cy} ${x2},${y2} `;
-    }
-    return path + " Z";
-  }, []);
-
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.5 }}
+      initial={{ opacity: 0, scale: 0.8 }}
       onMouseEnter={playHoverSound}
-      animate={{
-        opacity: isSelected ? 1 : (hasActiveSelection ? 0.2 : 1),
+      data-node-id={nodeID}
+      animate={{ 
+        opacity: isSelected ? 1 : (hasActiveSelection ? 0.2 : 1), 
         scale: isSelected ? 1.15 : (hasActiveSelection ? 0.9 : 1),
-        y: [0, -10, 0],
+        filter: (hasActiveSelection && !isSelected) ? "blur(4px) grayscale(50%)" : "blur(0px) grayscale(0%)",
+        y: [0, -5, 0],
         transition: {
           opacity: { duration: 0.5, delay: isSelected ? 0 : visualIndex * 0.1, ease: "easeOut" },
           scale: { duration: 0.5, delay: isSelected ? 0 : visualIndex * 0.1, ease: "easeOut" },
@@ -77,24 +54,26 @@ export const DashboardNode = ({
         transition: { duration: 0.2 }
       } : {}}
       onClick={onSelect}
-      className={`group relative p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all pointer-events-auto ${isSelected ? 'z-50' : 'z-20'}`}
+      className={`group relative p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all pointer-events-auto min-h-[115px] w-full ${isSelected ? 'z-50' : 'z-20'}`}
     >
-      {/* === COMIC THOUGHT CLOUD (SVG Scalloped Shape) === */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+      {/* === CLOUD SHAPE (SVG) === */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center scale-110">
         <svg
-          viewBox="0 0 310 210"
-          className="w-full h-full filter drop-shadow-[0_10px_20px_rgba(34,211,238,0.2)]"
+          viewBox="0 0 225 100"
+          className="w-full h-full drop-shadow-[0_10px_20px_rgba(34,211,238,0.2)]"
           preserveAspectRatio="xMidYMid meet"
         >
-          <path
+          <motion.path
             d={cloudPath}
-            fill="black"
-            stroke="white"
-            strokeWidth="2"
-            className="group-hover:fill-zinc-900 transition-colors duration-500"
-            style={{
-              filter: 'drop-shadow(0 0 15px rgba(255,255,255,0.2))'
-            }}
+            fill="rgba(8, 47, 73, 0.7)"
+            stroke="rgba(34, 211, 238, 0.4)"
+            strokeWidth="1.5"
+            className="group-hover:fill-sky-950/80 group-hover:stroke-cyan-300 transition-all duration-500"
+            animate={isSelected ? { 
+              strokeWidth: [1.5, 2.5, 1.5],
+              stroke: ["rgba(34, 211, 238, 0.4)", "rgba(34, 211, 238, 1)", "rgba(34, 211, 238, 0.4)"]
+            } : {}}
+            transition={{ duration: 2, repeat: Infinity }}
           />
         </svg>
       </div>
@@ -102,11 +81,17 @@ export const DashboardNode = ({
       {/* Internal Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-cyan-500/5 blur-[30px] rounded-full pointer-events-none group-hover:bg-cyan-400/15 transition-colors duration-1000" />
 
-      {/* Word and Main ID */}
-      <div className="relative z-10 flex flex-col items-center">
-        <span className="text-[10px] sm:text-[12px] md:text-sm font-black tracking-widest text-sky-400 mb-1 group-hover:text-sky-300 transition-colors leading-tight drop-shadow-[0_0_15px_rgba(56,189,248,0.5)]">
+      {/* Word and Content */}
+      <div className="relative z-20 flex flex-col items-center justify-center h-full w-full pointer-events-none translate-y-[6px] px-8 text-center">
+        <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.4)] group-hover:text-cyan-50 transition-colors leading-tight whitespace-pre-line max-w-[140px]">
           {word}
         </span>
+      </div>
+
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1 opacity-20 group-hover:opacity-60 transition-opacity pointer-events-none">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="w-0.5 h-0.5 rounded-full bg-cyan-400" />
+        ))}
       </div>
     </motion.div>
   );
