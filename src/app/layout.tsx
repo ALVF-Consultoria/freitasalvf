@@ -13,7 +13,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "FreitasALVF | Experiências Web Premium",
+  title: "FreitasALVF",
   description: "Desenvolvimento web de alta performance com Next.js, GSAP e Framer Motion.",
 };
 

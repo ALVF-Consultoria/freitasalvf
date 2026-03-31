@@ -1,8 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
-import { BookOpen, Sparkles, MoveRight } from "lucide-react";
+import { useState } from "react";
+import { useStepNavigation } from "../hooks/useStepNavigation";
+import { BookOpen } from "lucide-react";
 import { ParticlesBackground } from "./ParticlesBackground";
 import { educationContent } from "../constants/educationData";
 
@@ -12,35 +13,15 @@ interface EducationTransitionProps {
 
 export const EducationTransition = ({ onComplete }: EducationTransitionProps) => {
   const [step, setStep] = useState(1);
-  const lastScrollTime = useRef(0);
 
-  useEffect(() => {
-    if (step === 3) {
-      onComplete();
-    }
-  }, [step, onComplete]);
-
-  useEffect(() => {
-    const handleNavigation = (direction: "next" | "prev") => {
-      const now = Date.now();
-      if (now - lastScrollTime.current > 1500) {
-        setStep((prev) => {
-          if (direction === "next" && prev < 3) return prev + 1;
-          if (direction === "prev" && prev > 1) return prev - 1;
-          return prev;
-        });
-        lastScrollTime.current = now;
-      }
-    };
-
-    const handleScroll = (e: WheelEvent) => {
-      if (e.deltaY > 0) handleNavigation("next");
-      else if (e.deltaY < 0) handleNavigation("prev");
-    };
-
-    window.addEventListener("wheel", handleScroll);
-    return () => window.removeEventListener("wheel", handleScroll);
-  }, [step]);
+  useStepNavigation({
+    onNext: () => {
+      if (step < 2) setStep((prev) => prev + 1);
+      else onComplete();
+    },
+    onPrev: () => setStep((prev) => (prev > 1 ? prev - 1 : prev)),
+    cooldown: 1500,
+  });
 
   return (
     <div className="fixed inset-0 z-100 bg-[#050505] flex items-center justify-center overflow-hidden px-10">
@@ -63,7 +44,7 @@ export const EducationTransition = ({ onComplete }: EducationTransitionProps) =>
               {educationContent.philosophy.heritage}
             </span>
             <h2 className="text-2xl md:text-4xl font-serif italic text-white leading-relaxed tracking-tight">
-               "{educationContent.philosophy.phrase}"
+               &quot;{educationContent.philosophy.phrase}&quot;
             </h2>
             
             <div className="mt-12 flex flex-col items-center gap-6">
@@ -73,7 +54,7 @@ export const EducationTransition = ({ onComplete }: EducationTransitionProps) =>
                 className="flex flex-col items-center gap-2"
               >
                 <div className="w-px h-12 bg-linear-to-b from-indigo-400/50 to-transparent" />
-                <span className="text-[10px] font-mono text-indigo-400/60 uppercase tracking-[0.3em]">SCROLL_TO_ENTER_ARCHIVE</span>
+                <span className="text-[10px] font-mono text-indigo-400/60 uppercase tracking-[0.3em]">DESLIZE_PARA_ACESSAR</span>
               </motion.div>
             </div>
           </motion.div>
@@ -117,7 +98,7 @@ export const EducationTransition = ({ onComplete }: EducationTransitionProps) =>
                 className="flex flex-col items-center gap-2"
               >
                 <div className="w-px h-16 bg-linear-to-b from-indigo-400/50 to-transparent" />
-                <span className="text-[10px] font-mono text-indigo-400/60 uppercase tracking-[0.3em]">INITIATE_KNOWLEDGE_TRANSFER</span>
+                <span className="text-[10px] font-mono text-indigo-400/60 uppercase tracking-[0.3em]">INICIAR_TRANSFERENCIA</span>
               </motion.div>
             </div>
           </motion.div>

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useMemo } from "react";
+import { motion, Variants } from "framer-motion";
 import { svgPaths } from "./svgPaths";
 import { HologramText } from "./HologramText";
+import { useMobile } from "../hooks/useMobile";
 
 interface SvgAnimationProps {
   isFrenetic?: boolean;
@@ -15,6 +16,7 @@ const hologramWords = [
 ];
 
 export const SvgAnimation = ({ isFrenetic = false, isGlitching = false }: SvgAnimationProps) => {
+  const isMobile = useMobile();
   const [wordIndex, setWordIndex] = useState(0);
   const [showHologram, setShowHologram] = useState(false);
 
@@ -22,9 +24,10 @@ export const SvgAnimation = ({ isFrenetic = false, isGlitching = false }: SvgAni
   const strokeColor = "#3b82f6";
   const freneticColor = "#60a5fa";
   
-  const glowShadow = isFrenetic 
+  // No mobile, removemos filtros pesados para ganhar performance
+  const glowShadow = isMobile ? "none" : (isFrenetic 
     ? `drop-shadow(0 0 15px ${freneticColor}) drop-shadow(0 0 30px ${freneticColor})`
-    : `drop-shadow(0 0 5px ${strokeColor}) drop-shadow(0 0 10px ${strokeColor})`;
+    : `drop-shadow(0 0 5px ${strokeColor}) drop-shadow(0 0 10px ${strokeColor})`);
 
   const handleHoverStart = () => {
     if (isFrenetic) return;
@@ -37,7 +40,7 @@ export const SvgAnimation = ({ isFrenetic = false, isGlitching = false }: SvgAni
   };
 
   // Variantes para a animação da corrente de luz
-  const lightStreamVariants: any = {
+  const lightStreamVariants: Variants = {
     initial: { pathLength: 0, pathOffset: 0, opacity: 0 },
     animate: {
       pathLength: [0, 0.4, 0],
@@ -54,6 +57,23 @@ export const SvgAnimation = ({ isFrenetic = false, isGlitching = false }: SvgAni
   const paths = svgPaths;
   const vibrantBlue = "#3b82f6";
   const hoverBlue = "#60a5fa";
+
+  // Seleção de caminhos para animação no mobile (10 caminhos: contornos + internos)
+  const mobileAnimatedIndices = [0, 2, 10, 25, 40, 55, 60, 70, 80, 84];
+
+  // Semente aleatória estável para cada caminho
+  const [randomSeeds] = useState(() => paths.map(() => Math.random()));
+
+  // Calcula propriedades dos caminhos baseadas no estado frenético e sementes estáveis
+  const pathConfig = useMemo(() => {
+    return paths.map((_, i) => {
+      const seed = randomSeeds[i];
+      return {
+        delay: isFrenetic ? (i * 0.01) % 0.8 : (i * 0.08) % 5,
+        duration: isFrenetic ? 0.6 + seed * 0.4 : 4 + seed * 2,
+      };
+    });
+  }, [isFrenetic, randomSeeds, paths]);
 
   return (
     <motion.div 
@@ -103,36 +123,42 @@ export const SvgAnimation = ({ isFrenetic = false, isGlitching = false }: SvgAni
         ))}
 
         {/* Camada Colorida: As correntes de luz que percorrem os caminhos */}
-        {paths.map((p, i) => (
-          <motion.path
-            key={`stream-${i}`}
-            d={p}
-            fill="none"
-            stroke={isFrenetic ? freneticColor : vibrantBlue}
-            strokeWidth={isFrenetic ? 4 : 2}
-            strokeLinecap="round"
-            variants={lightStreamVariants}
-            initial="initial"
-            animate="animate"
-            whileHover={!isFrenetic ? {
-              strokeWidth: 4,
-              stroke: hoverBlue,
-              opacity: 1,
-              filter: `drop-shadow(0 0 5px ${hoverBlue}) drop-shadow(0 0 10px ${hoverBlue})`,
-            } : {}}
-            transition={{
-              ...(lightStreamVariants.animate.transition as any),
-              delay: isFrenetic ? (i * 0.01) % 0.8 : (i * 0.08) % 5,
-              duration: isFrenetic ? 0.6 + Math.random() * 0.4 : 4 + Math.random() * 2,
-              strokeWidth: { duration: 0.2 },
-              stroke: { duration: 0.2 },
-            }}
-            style={{
-              filter: glowShadow,
-              cursor: isFrenetic ? "default" : "pointer",
-            }}
-          />
-        ))}
+        {paths.map((p, i) => {
+          // No mobile, animamos apenas um subconjunto selecionado para economizar CPU
+          if (isMobile && !mobileAnimatedIndices.includes(i)) return null;
+
+          return (
+            <motion.path
+              key={`stream-${i}`}
+              d={p}
+              fill="none"
+              stroke={isFrenetic ? freneticColor : vibrantBlue}
+              strokeWidth={isFrenetic ? 4 : 2}
+              strokeLinecap="round"
+              variants={lightStreamVariants}
+              initial="initial"
+              animate="animate"
+              whileHover={!isFrenetic ? {
+                strokeWidth: 4,
+                stroke: hoverBlue,
+                opacity: 1,
+                filter: `drop-shadow(0 0 5px ${hoverBlue}) drop-shadow(0 0 10px ${hoverBlue})`,
+              } : {}}
+              transition={{
+                delay: pathConfig[i].delay,
+                duration: pathConfig[i].duration,
+                repeat: Infinity,
+                ease: "linear",
+                strokeWidth: { duration: 0.2 },
+                stroke: { duration: 0.2 },
+              }}
+              style={{
+                filter: glowShadow,
+                cursor: isFrenetic ? "default" : "pointer",
+              }}
+            />
+          );
+        })}
 
         {/* Ponto de luz fixo */}
         <motion.circle

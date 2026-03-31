@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { SvgAnimation } from "@/components/SvgAnimation";
 import { ParticlesBackground } from "@/components/ParticlesBackground";
-import { VideoBackground } from "@/components/common/VideoBackground";
+import { useMobile } from "@/hooks/useMobile";
 
 type HeroPhase = "idle" | "frenetic" | "video";
 
@@ -13,6 +13,7 @@ interface HeroProps {
 }
 
 export const Hero = ({ onTransitionComplete }: HeroProps) => {
+  const isMobile = useMobile();
   const [phase, setPhase] = useState<HeroPhase>("idle");
   const [isFlashing, setIsFlashing] = useState(false);
   const [isGlobalGlitch, setIsGlobalGlitch] = useState(false);
@@ -20,7 +21,6 @@ export const Hero = ({ onTransitionComplete }: HeroProps) => {
   const [isHoveringBg, setIsHoveringBg] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleBrainClick = () => {
     if (phase !== "idle") return;
@@ -38,7 +38,7 @@ export const Hero = ({ onTransitionComplete }: HeroProps) => {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!containerRef.current || phase === "video") return;
+    if (isMobile || !containerRef.current || phase === "video") return;
     const { left, top, width, height } = containerRef.current.getBoundingClientRect();
     const x = ((e.clientX - left) / width) * 100;
     const y = ((e.clientY - top) / height) * 100;
@@ -54,25 +54,14 @@ export const Hero = ({ onTransitionComplete }: HeroProps) => {
       setTimeout(() => setIsGlobalGlitch(false), 150);
 
       // Agenda o próximo glitch após um intervalo aleatório (3 a 8 segundos)
-      const nextDelay = Math.random() * 5000 + 3000;
+      const nextDelay = isMobile ? (Math.random() * 8000 + 5000) : (Math.random() * 5000 + 3000);
       timeoutId = setTimeout(triggerGlitch, nextDelay);
     };
 
     timeoutId = setTimeout(triggerGlitch, 5000); // Primeiro glitch após 5s
 
     return () => clearTimeout(timeoutId);
-  }, []);
-
-  const handleVideoTimeUpdate = () => {
-    if (!videoRef.current) return;
-
-    const video = videoRef.current;
-    // Aciona o onTransitionComplete 0.8s antes de o vídeo terminar
-    // O AnimatePresence cuidará do Zoom suave durante o exit
-    if (video.duration && video.currentTime > video.duration - 0.8) {
-      onTransitionComplete?.();
-    }
-  };
+  }, [isMobile]);
 
   return (
     <section
@@ -105,29 +94,31 @@ export const Hero = ({ onTransitionComplete }: HeroProps) => {
         />
       </motion.div>
 
-      {/* 1.2 Camada Lanterna (Vivida e Colorida - Spotlight) */}
-      <motion.div
-        animate={{
-          opacity: (isHoveringBg && phase === "idle") ? 1 : 0,
-          scale: isGlobalGlitch ? 1.15 : 1.1,
-          filter: isGlobalGlitch ? "brightness(1.25) saturate(150%)" : "brightness(1.25) saturate(150%)"
-        } as any}
-        style={{
-          WebkitMaskImage: `radial-gradient(circle 250px at ${mousePos.x}% ${mousePos.y}%, black, transparent)`,
-          maskImage: `radial-gradient(circle 250px at ${mousePos.x}% ${mousePos.y}%, black, transparent)`,
-        }}
-        transition={{ duration: isGlobalGlitch ? 0.05 : 0.3 }}
-        className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none"
-      >
-        <div className="absolute inset-0 bg-blue-500/10 mix-blend-overlay" />
-        <Image
-          src="/images/Engravatado-sem-fundo.png"
-          alt="Hero Background Vivid"
-          fill
-          className="object-contain object-center scale-110"
-          priority
-        />
-      </motion.div>
+      {/* 1.2 Camada Lanterna (Vivida e Colorida - Spotlight) - DESATIVADA NO MOBILE */}
+      {!isMobile && (
+        <motion.div
+          animate={{
+            opacity: (isHoveringBg && phase === "idle") ? 1 : 0,
+            scale: isGlobalGlitch ? 1.15 : 1.1,
+            filter: "brightness(1.25) saturate(150%)"
+          }}
+          style={{
+            WebkitMaskImage: `radial-gradient(circle 250px at ${mousePos.x}% ${mousePos.y}%, black, transparent)`,
+            maskImage: `radial-gradient(circle 250px at ${mousePos.x}% ${mousePos.y}%, black, transparent)`,
+          }}
+          transition={{ duration: isGlobalGlitch ? 0.05 : 0.3 }}
+          className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none"
+        >
+          <div className="absolute inset-0 bg-blue-500/10 mix-blend-overlay" />
+          <Image
+            src="/images/Engravatado-sem-fundo.png"
+            alt="Hero Background Vivid"
+            fill
+            className="object-contain object-center scale-110"
+            priority
+          />
+        </motion.div>
+      )}
 
       {/* 2. Gradiente (Camada 1) */}
       <div className="absolute inset-0 bg-linear-to-t from-[#050505] via-transparent to-transparent z-1" />

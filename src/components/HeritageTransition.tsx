@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
+import { useStepNavigation } from "../hooks/useStepNavigation";
 import { History } from "lucide-react";
 import { ParticlesBackground } from "./ParticlesBackground";
 
@@ -11,35 +12,15 @@ interface HeritageTransitionProps {
 
 export const HeritageTransition = ({ onComplete }: HeritageTransitionProps) => {
   const [step, setStep] = useState(1);
-  const lastScrollTime = useRef(0);
 
-  useEffect(() => {
-    if (step === 3) {
-      onComplete();
-    }
-  }, [step, onComplete]);
-
-  useEffect(() => {
-    const handleNavigation = (direction: "next" | "prev") => {
-      const now = Date.now();
-      if (now - lastScrollTime.current > 1500) {
-        setStep((prev) => {
-          if (direction === "next" && prev < 3) return prev + 1;
-          if (direction === "prev" && prev > 1) return prev - 1;
-          return prev;
-        });
-        lastScrollTime.current = now;
-      }
-    };
-
-    const handleScroll = (e: WheelEvent) => {
-      if (e.deltaY > 0) handleNavigation("next");
-      else if (e.deltaY < 0) handleNavigation("prev");
-    };
-
-    window.addEventListener("wheel", handleScroll);
-    return () => window.removeEventListener("wheel", handleScroll);
-  }, []);
+  useStepNavigation({
+    onNext: () => {
+      if (step < 2) setStep((prev) => prev + 1);
+      else onComplete();
+    },
+    onPrev: () => setStep((prev) => (prev > 1 ? prev - 1 : prev)),
+    cooldown: 1500,
+  });
 
   return (
     <div className="fixed inset-0 z-100 bg-[#050505] flex items-center justify-center overflow-hidden px-10">
@@ -71,7 +52,7 @@ export const HeritageTransition = ({ onComplete }: HeritageTransitionProps) => {
                 className="flex flex-col items-center gap-2"
               >
                 <div className="w-px h-12 bg-linear-to-b from-amber-400/50 to-transparent" />
-                <span className="text-[10px] font-mono text-amber-400/60 uppercase tracking-[0.3em]">SCROLL_PARA_RECAPITULAR</span>
+                <span className="text-[10px] font-mono text-amber-400/60 uppercase tracking-[0.3em]">DESLIZE_PARA_RECAPITULAR</span>
               </motion.div>
             </div>
           </motion.div>

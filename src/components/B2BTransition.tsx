@@ -1,8 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
-import { Database, TrendingUp, ShieldCheck } from "lucide-react";
+import { useState } from "react";
+import { useStepNavigation } from "../hooks/useStepNavigation";
+import { Database } from "lucide-react";
 import { ParticlesBackground } from "./ParticlesBackground";
 import { b2bContent } from "../constants/b2bData";
 
@@ -12,35 +13,15 @@ interface B2BTransitionProps {
 
 export const B2BTransition = ({ onComplete }: B2BTransitionProps) => {
   const [step, setStep] = useState(1);
-  const lastScrollTime = useRef(0);
 
-  useEffect(() => {
-    if (step === 3) {
-      onComplete();
-    }
-  }, [step, onComplete]);
-
-  useEffect(() => {
-    const handleNavigation = (direction: "next" | "prev") => {
-      const now = Date.now();
-      if (now - lastScrollTime.current > 1500) {
-        setStep((prev) => {
-          if (direction === "next" && prev < 3) return prev + 1;
-          if (direction === "prev" && prev > 1) return prev - 1;
-          return prev;
-        });
-        lastScrollTime.current = now;
-      }
-    };
-
-    const handleScroll = (e: WheelEvent) => {
-      if (e.deltaY > 0) handleNavigation("next");
-      else if (e.deltaY < 0) handleNavigation("prev");
-    };
-
-    window.addEventListener("wheel", handleScroll);
-    return () => window.removeEventListener("wheel", handleScroll);
-  }, [step]);
+  useStepNavigation({
+    onNext: () => {
+      if (step < 2) setStep((prev) => prev + 1);
+      else onComplete();
+    },
+    onPrev: () => setStep((prev) => (prev > 1 ? prev - 1 : prev)),
+    cooldown: 1500,
+  });
 
   return (
     <div className="fixed inset-0 z-100 bg-[#020617] flex items-center justify-center overflow-hidden px-10">
@@ -60,7 +41,7 @@ export const B2BTransition = ({ onComplete }: B2BTransitionProps) => {
               ESTRATÉGIA_B2B_ATIVADA
             </span>
             <h2 className="text-2xl md:text-5xl font-serif italic text-white leading-tight tracking-tight">
-              "{b2bContent.philosophy.phrase}"
+              &quot;{b2bContent.philosophy.phrase}&quot;
             </h2>
             
             <div className="mt-12 flex flex-col items-center gap-6">
@@ -69,7 +50,7 @@ export const B2BTransition = ({ onComplete }: B2BTransitionProps) => {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="flex flex-col items-center gap-2"
               >
-                <span className="text-[10px] font-mono text-emerald-400/60 uppercase tracking-[0.3em]">SCROLL_TO_SYNCHRONIZE</span>
+                <span className="text-[10px] font-mono text-emerald-400/60 uppercase tracking-[0.3em]">DESLIZE_PARA_SINCRONIZAR</span>
                 <div className="w-px h-12 bg-linear-to-b from-emerald-400/50 to-transparent" />
               </motion.div>
             </div>
@@ -109,7 +90,7 @@ export const B2BTransition = ({ onComplete }: B2BTransitionProps) => {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="flex flex-col items-center gap-2"
               >
-                <span className="text-[10px] font-mono text-emerald-400/60 uppercase tracking-[0.3em]">SCROLL_TO_ENTER_HUB</span>
+                <span className="text-[10px] font-mono text-emerald-400/60 uppercase tracking-[0.3em]">DESLIZE_PARA_ACESSAR_HUB</span>
                 <div className="w-px h-16 bg-linear-to-b from-emerald-400/50 to-transparent" />
               </motion.div>
             </div>

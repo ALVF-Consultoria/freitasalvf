@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
+import { useStepNavigation } from "../hooks/useStepNavigation";
 import { ParticlesBackground } from "./ParticlesBackground";
 
 interface AITransitionProps {
@@ -10,47 +11,15 @@ interface AITransitionProps {
 
 export const AITransition = ({ onComplete }: AITransitionProps) => {
   const [step, setStep] = useState(1);
-  const lastScrollTime = useRef(0);
 
-  useEffect(() => {
-    if (step === 3) {
-      onComplete();
-    }
-  }, [step, onComplete]);
-
-  useEffect(() => {
-    const handleNavigation = (direction: "next" | "prev") => {
-      const now = Date.now();
-      if (now - lastScrollTime.current > 1500) { // 1.5s cooldown
-        setStep((prev) => {
-          if (direction === "next" && prev < 3) return prev + 1;
-          if (direction === "prev" && prev > 1) return prev - 1;
-          return prev;
-        });
-        lastScrollTime.current = now;
-      }
-    };
-
-    const handleScroll = (e: WheelEvent) => {
-      if (e.deltaY > 0) {
-        handleNavigation("next");
-      } else if (e.deltaY < 0) {
-        handleNavigation("prev");
-      }
-    };
-
-    const handleTouch = () => {
-      handleNavigation("next");
-    };
-
-    window.addEventListener("wheel", handleScroll);
-    window.addEventListener("touchend", handleTouch);
-    
-    return () => {
-      window.removeEventListener("wheel", handleScroll);
-      window.removeEventListener("touchend", handleTouch);
-    };
-  }, []);
+  useStepNavigation({
+    onNext: () => {
+      if (step < 2) setStep((prev) => prev + 1);
+      else onComplete();
+    },
+    onPrev: () => setStep((prev) => (prev > 1 ? prev - 1 : prev)),
+    cooldown: 1500,
+  });
 
   return (
     <div className="relative min-h-screen w-full bg-[#050505] flex items-center justify-center overflow-hidden px-10">
@@ -73,7 +42,7 @@ export const AITransition = ({ onComplete }: AITransitionProps) => {
               INTERFACE AUTÔNOMA_ATIVADA
             </span>
             <h2 className="text-2xl md:text-4xl font-light text-white leading-relaxed tracking-tight italic">
-              "Indo muito além das limitadas IAs <span className="text-cyan-400/50">(pseudo inteligência artificial)</span>, nossa <span className="text-cyan-400 font-bold">Interface Autônoma</span>, gera integração da necessidade com as soluções."
+              &quot;Indo muito além das limitadas IAs <span className="text-cyan-400/50">(pseudo inteligência artificial)</span>, nossa <span className="text-cyan-400 font-bold">Interface Autônoma</span>, gera integração da necessidade com as soluções.&quot;
             </h2>
             
             <div className="mt-12 flex flex-col items-center gap-6">
@@ -82,7 +51,7 @@ export const AITransition = ({ onComplete }: AITransitionProps) => {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="flex flex-col items-center gap-2"
               >
-                <span className="text-[10px] font-mono text-cyan-400/60 uppercase tracking-[0.3em]">SCROLL_TO_INITIATE</span>
+                <span className="text-[10px] font-mono text-cyan-400/60 uppercase tracking-[0.3em]">DESLIZE_PARA_INICIAR</span>
                 <div className="w-px h-12 bg-linear-to-b from-cyan-400/50 to-transparent" />
               </motion.div>
             </div>
@@ -119,7 +88,7 @@ export const AITransition = ({ onComplete }: AITransitionProps) => {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="flex flex-col items-center gap-2"
               >
-                <span className="text-[10px] font-mono text-cyan-400/60 uppercase tracking-[0.3em]">SCROLL_TO_ENTER_SYSTEM</span>
+                <span className="text-[10px] font-mono text-cyan-400/60 uppercase tracking-[0.3em]">DESLIZE_PARA_ACESSAR</span>
                 <div className="w-px h-16 bg-linear-to-b from-cyan-400/50 to-transparent" />
               </motion.div>
             </div>

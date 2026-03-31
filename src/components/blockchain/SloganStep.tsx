@@ -3,11 +3,7 @@
 import { motion } from "framer-motion";
 import { Network } from "lucide-react";
 
-interface SloganStepProps {
-  onBack: () => void;
-}
-
-export const SloganStep = ({ onBack }: SloganStepProps) => {
+export const SloganStep = () => {
   return (
     <motion.div
       key="slogan"
@@ -30,14 +26,16 @@ export const SloganStep = ({ onBack }: SloganStepProps) => {
       </h2>
 
       <div className="space-y-4 flex flex-col items-center">
-        <button
-          onClick={onBack}
-          className="group relative px-16 py-6 border border-amber-500/40 bg-transparent hover:bg-amber-500 text-amber-500 hover:text-black font-mono text-sm tracking-[0.5em] uppercase transition-all overflow-hidden"
+        <a
+          href="https://x.com/FreitasALVF"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group relative px-16 py-6 border border-amber-500/40 bg-transparent hover:bg-amber-500 text-amber-500 hover:text-black font-mono text-sm tracking-[0.5em] uppercase transition-all overflow-hidden flex items-center justify-center no-underline"
         >
-          <span className="relative z-10">CLOSE_NODE_SESSION</span>
+          <span className="relative z-10">CONNECT_ON_X</span>
           <motion.div className="absolute inset-0 bg-amber-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-        </button>
-        <span className="text-[8px] text-amber-500/20 tracking-widest uppercase">ID_SESSION: BC_FINAL_V1</span>
+        </a>
+        <span className="text-[8px] text-amber-500/20 tracking-widest uppercase">NODE_STATUS: READY_FOR_CONNECTION</span>
       </div>
     </motion.div>
   );

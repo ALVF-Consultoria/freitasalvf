@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { useStepNavigation } from "../hooks/useStepNavigation";
 import { ParticlesBackground } from "../components/ParticlesBackground";
 import { BlockchainHUD } from "../components/blockchain/BlockchainHUD";
 import { IntroStep } from "../components/blockchain/IntroStep";
@@ -10,7 +11,6 @@ import { TopologyStep } from "../components/blockchain/TopologyStep";
 import { AnalysisStep } from "../components/blockchain/AnalysisStep";
 import { SloganStep } from "../components/blockchain/SloganStep";
 import { SolanaStep } from "../components/blockchain/SolanaStep";
-import { ecosystemPlatforms } from "../constants/blockchainData";
 
 interface BlockchainSolutionProps {
   onBack: () => void;
@@ -19,41 +19,25 @@ interface BlockchainSolutionProps {
 export const BlockchainSolution = ({ onBack }: BlockchainSolutionProps) => {
   const [step, setStep] = useState(1);
   const [showConnections, setShowConnections] = useState(false);
-  const lastScrollTime = useRef(0);
   const totalSteps = 15;
 
-  // Gerenciador de Scroll para a Timeline Vertical
-  useEffect(() => {
-    const handleScroll = (e: WheelEvent) => {
-      const now = Date.now();
-      if (now - lastScrollTime.current < 1200) return;
-
-      if (e.deltaY > 0) {
-        if (step < totalSteps) {
-          setStep(prev => prev + 1);
-          lastScrollTime.current = now;
-        } else {
-          onBack(); // Scroll final volta para o dashboard
-        }
-      } else if (e.deltaY < 0) {
-        if (step > 1) {
-          setStep(prev => prev - 1);
-          lastScrollTime.current = now;
-        }
-      }
-    };
-
-    window.addEventListener("wheel", handleScroll);
-    return () => window.removeEventListener("wheel", handleScroll);
-  }, [step, onBack]);
+  useStepNavigation({
+    onNext: () => {
+      if (step < totalSteps) setStep((prev) => prev + 1);
+      else onBack();
+    },
+    onPrev: () => setStep((prev) => (prev > 1 ? prev - 1 : prev)),
+    cooldown: 1200,
+  });
 
   // Gatilho para animações de rede no step 7
   useEffect(() => {
     if (step === 7) {
       const timer = setTimeout(() => setShowConnections(true), 1200);
-      return () => clearTimeout(timer);
-    } else {
-      setShowConnections(false);
+      return () => {
+        clearTimeout(timer);
+        setShowConnections(false);
+      };
     }
   }, [step]);
 
@@ -87,7 +71,7 @@ export const BlockchainSolution = ({ onBack }: BlockchainSolutionProps) => {
           {step === 7 && <TopologyStep showConnections={showConnections} />}
           {(step >= 8 && step <= 11) && <AnalysisStep step={step} />}
           {(step >= 12 && step <= 14) && <SolanaStep step={step} />}
-          {step === 15 && <SloganStep onBack={onBack} />}
+          {step === 15 && <SloganStep />}
         </AnimatePresence>
       </div>
 

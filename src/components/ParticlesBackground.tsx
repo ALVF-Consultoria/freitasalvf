@@ -2,6 +2,7 @@
 
 import { motion, useSpring, useMotionValue, useTransform } from "framer-motion";
 import { useEffect, useState, useMemo } from "react";
+import { useMobile } from "../hooks/useMobile";
 
 interface Particle {
   id: number;
@@ -13,6 +14,9 @@ interface Particle {
 }
 
 export const ParticlesBackground = () => {
+  const isMobile = useMobile();
+  const particleCount = isMobile ? 30 : 100;
+
   const [particles] = useState<Particle[]>(() => {
     return Array.from({ length: 100 }).map((_, i) => ({
       id: i,
@@ -39,6 +43,8 @@ export const ParticlesBackground = () => {
   const layer3Y = useTransform(springY, (v) => v * 4);
 
   useEffect(() => {
+    if (isMobile) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
       const moveX = (clientX - window.innerWidth / 2) / 25;
@@ -49,16 +55,19 @@ export const ParticlesBackground = () => {
 
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, isMobile]);
 
   const memoizedLayers = useMemo(() => {
      if (particles.length === 0) return [];
+     const activeParticles = particles.slice(0, particleCount);
+     const count = activeParticles.length;
+
      return [
-      { p: particles.slice(0, 40), x: layer1X, y: layer1Y },
-      { p: particles.slice(40, 75), x: layer2X, y: layer2Y },
-      { p: particles.slice(75, 100), x: layer3X, y: layer3Y },
+      { p: activeParticles.slice(0, Math.floor(count * 0.4)), x: layer1X, y: layer1Y },
+      { p: activeParticles.slice(Math.floor(count * 0.4), Math.floor(count * 0.75)), x: layer2X, y: layer2Y },
+      { p: activeParticles.slice(Math.floor(count * 0.75), count), x: layer3X, y: layer3Y },
     ];
-  }, [particles, layer1X, layer1Y, layer2X, layer2Y, layer3X, layer3Y]);
+  }, [particles, particleCount, layer1X, layer1Y, layer2X, layer2Y, layer3X, layer3Y]);
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-20">
@@ -88,7 +97,7 @@ export const ParticlesBackground = () => {
                 top: `${particle.y}%`,
                 width: particle.size,
                 height: particle.size,
-                boxShadow: `0 0 ${particle.size * 2}px rgba(34, 211, 238, 0.4)`,
+                boxShadow: isMobile ? "none" : `0 0 ${particle.size * 2}px rgba(34, 211, 238, 0.4)`,
               }}
             />
           ))}
