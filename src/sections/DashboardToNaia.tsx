@@ -142,7 +142,7 @@ export const DashboardToNaia = ({
                             setActiveNodeNumber(null);
                           }, 2000);
                         } else if (node.id === 1) {
-                          window.open("https://naia.freitasalvf.net", "_blank");
+                          window.open("https://storytellingnaia.alvf.net.br", "_blank");
                         } else {
                           node.onNavigate?.();
                         }
