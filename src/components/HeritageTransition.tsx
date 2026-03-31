@@ -61,7 +61,7 @@ export const HeritageTransition = ({ onComplete }: HeritageTransitionProps) => {
               ARQUIVO HISTÓRICO ATIVADO
             </span>
             <h2 className="text-3xl md:text-5xl font-serif italic text-white leading-relaxed tracking-tight">
-               "Há mais de 30 anos transformando tecnologia em valor, da mecanografia ao Blockchain."
+               &quot;Há mais de 30 anos transformando tecnologia em valor, da mecanografia ao Blockchain.&quot;
             </h2>
             
             <div className="mt-12 flex flex-col items-center gap-6">
@@ -100,7 +100,7 @@ export const HeritageTransition = ({ onComplete }: HeritageTransitionProps) => {
               ESTEVE LÁ, FEZ ACONTECER
             </span>
             <h3 className="text-6xl md:text-9xl font-black text-white uppercase tracking-tighter">
-              + DE 30 ANOS <br /><span className="text-amber-500 text-glow-amber">DE LEGADO</span>
+              + DE 30 ANOS <br /><span className="text-amber-500 text-glow-amber">LEGADO</span>
             </h3>
             
             <div className="mt-16 flex flex-col items-center gap-6">

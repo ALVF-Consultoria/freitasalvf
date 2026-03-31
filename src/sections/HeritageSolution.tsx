@@ -157,7 +157,7 @@ export const HeritageSolution = ({ onBack }: HeritageSolutionProps) => {
                      </span>
                   </div>
                   <h3 className="text-5xl lg:text-7xl font-black text-white uppercase tracking-tighter mb-8">{event.title}</h3>
-                  <p className="text-xl lg:text-2xl text-white/50 font-light leading-relaxed max-w-2xl italic">"{event.description}"</p>
+                  <p className="text-xl lg:text-2xl text-white/50 font-light leading-relaxed max-w-2xl italic">&quot;{event.description}&quot;</p>
                 </motion.div>
               ))}
 
@@ -205,7 +205,7 @@ export const HeritageSolution = ({ onBack }: HeritageSolutionProps) => {
                   >
                     <div className="flex flex-col items-center md:items-start text-center md:text-left transition-all">
                       <span className="text-amber-500 font-mono text-xs uppercase tracking-[0.5em] font-bold mb-2">CONSTRUA SEU FUTURO</span>
-                      <span className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase group-hover:text-amber-400">CONECTE-SE FREITAS ALVF</span>
+                      <span className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase group-hover:text-amber-400">CONECTE-SE</span>
                     </div>
                     <div className="w-20 h-20 border-2 border-amber-500/30 flex items-center justify-center rounded-full group-hover:border-amber-400 group-hover:shadow-[0_0_50px_rgba(245,158,11,0.3)] transition-all">
                       <svg viewBox="0 0 24 24" className="w-10 h-10 fill-amber-500 group-hover:fill-amber-400 transition-colors" xmlns="http://www.w3.org/2000/svg">

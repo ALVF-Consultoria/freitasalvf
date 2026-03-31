@@ -6,8 +6,8 @@ export const b2bContent = {
   consultancy: {
     name: "ALVF Consultoria",
     description: "Consultoria de TI focada em alto impacto, arquitetura escalável e inovação centrada no valor do negócio.",
-    website: "ALVFConsultoria.net",
-    url: "https://ALVFConsultoria.net"
+    website: "alvf.net.br",
+    url: "https://alvf.net.br"
   },
   pillars: [
     {

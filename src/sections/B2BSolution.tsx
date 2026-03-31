@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { b2bContent } from "../constants/b2bData";
-import { ArrowLeft, ExternalLink, Globe, Database } from "lucide-react";
+import { ArrowLeft, ExternalLink, Database } from "lucide-react";
 import { ParticlesBackground } from "../components/ParticlesBackground";
 import { ScrollIndicator } from "../components/common/ScrollIndicator";
 
@@ -65,7 +65,7 @@ export const B2BSolution = ({ onBack }: B2BSolutionProps) => {
               PRIMEIRA DIRETRIZ
             </span>
             <h2 className="text-3xl lg:text-5xl font-serif italic text-white leading-tight">
-              "{b2bContent.philosophy.phrase}"
+              &quot;{b2bContent.philosophy.phrase}&quot;
             </h2>
             <div className="flex flex-col items-center gap-4">
                <div className="w-12 h-px bg-emerald-500/50" />
@@ -92,7 +92,7 @@ export const B2BSolution = ({ onBack }: B2BSolutionProps) => {
                  PILAR ESTRATÉGICO
                </span>
             </div>
-            <h3 className="text-6xl lg:text-8xl font-black text-white uppercase tracking-tighter mb-8 bg-linear-to-b from-white to-white/20 bg-clip-text text-transparent">
+            <h3 className="text-6xl lg:text-8xl font-black uppercase tracking-tighter mb-8 bg-linear-to-b from-white to-white/20 bg-clip-text text-transparent">
               {b2bContent.pillars[i].title}
             </h3>
             <p className="text-xl lg:text-2xl text-white/50 font-light leading-relaxed max-w-2xl">

@@ -1,11 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useMemo } from "react";
 
 interface DashboardNodeNaiaProps {
   word: string;
-  nodeNumber: number;
   visualIndex: number;
   isSelected?: boolean;
   hasActiveSelection?: boolean;
@@ -14,15 +12,11 @@ interface DashboardNodeNaiaProps {
 
 export const DashboardNodeNaia = ({ 
   word, 
-  nodeNumber, 
   visualIndex, 
   isSelected = false, 
   hasActiveSelection = false, 
   onSelect 
 }: DashboardNodeNaiaProps) => {
-  // O nodeNumber é usado aqui e nos labels técnicos, satisfazendo o lint de uso
-  const nodeID = useMemo(() => `0x0${nodeNumber}`, [nodeNumber]);
-
   const playHoverSound = () => {
     const audio = new Audio("/audios/transition-efect.mp3");
     audio.volume = 0.3;
@@ -88,25 +82,9 @@ export const DashboardNodeNaia = ({
           />
         ))}
       </div>
-
-      <div className="absolute top-3 right-6 flex flex-col items-end opacity-40 group-hover:opacity-100 transition-opacity">
-        <div className="flex items-center gap-1.5">
-          <span className="w-1 h-1 rounded-full bg-cyan-400" />
-          <span className="text-[7px] font-mono text-cyan-300 tracking-tighter">FLUXO_DADOS</span>
-        </div>
-        <span className="text-[7px] font-mono text-white/40">{(nodeNumber * 7) % 100}% CARGA</span>
-      </div>
       
-      <div className="absolute bottom-3 left-6 opacity-30 group-hover:opacity-100">
-        <span className="text-[7px] font-mono text-cyan-400/60 uppercase">{nodeID}</span>
-      </div>
-
-      {/* ID Central Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-cyan-500/5 blur-2xl rounded-full pointer-events-none group-hover:bg-cyan-500/10 transition-colors" />
-
       {/* Word Content - Centralizado precisely */}
       <div className="relative z-20 flex flex-col items-center justify-center h-full w-full pointer-events-none translate-y-[6px] px-8 text-center">
-        <span className="text-[10px] font-mono text-cyan-400/50 mb-2 tracking-[0.3em]">0x0{nodeNumber}</span>
         <span className="text-sm md:text-base font-black uppercase tracking-widest text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] group-hover:scale-105 transition-transform duration-300 whitespace-pre-line max-w-[160px]">
           {word}
         </span>

@@ -122,7 +122,6 @@ export const DashboardToNaia = ({
                 >
                   <DashboardNodeNaia
                     word={node.word}
-                    nodeNumber={nodeNumber}
                     visualIndex={visualIndex}
                     isSelected={activeNodeNumber === nodeNumber}
                     hasActiveSelection={activeNodeNumber !== null}
