@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { SvgAnimation } from "@/components/SvgAnimation";
@@ -45,23 +45,19 @@ export const Hero = ({ onTransitionComplete }: HeroProps) => {
     setMousePos({ x, y });
   };
 
-  // Efeito de Glitch Sincronizado Aleatório
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+  // O glitch da imagem não tem mais relógio próprio: ele é disparado na virada
+  // do loop do cérebro fantasma, quando ele pulsa completo.
+  const glitchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const triggerGlitch = () => {
-      setIsGlobalGlitch(true);
-      setTimeout(() => setIsGlobalGlitch(false), 150);
+  const handleBrainPulse = useCallback(() => {
+    setIsGlobalGlitch(true);
+    if (glitchTimeoutRef.current) clearTimeout(glitchTimeoutRef.current);
+    glitchTimeoutRef.current = setTimeout(() => setIsGlobalGlitch(false), 150);
+  }, []);
 
-      // Agenda o próximo glitch após um intervalo aleatório (3 a 8 segundos)
-      const nextDelay = isMobile ? (Math.random() * 8000 + 5000) : (Math.random() * 5000 + 3000);
-      timeoutId = setTimeout(triggerGlitch, nextDelay);
-    };
-
-    timeoutId = setTimeout(triggerGlitch, 5000); // Primeiro glitch após 5s
-
-    return () => clearTimeout(timeoutId);
-  }, [isMobile]);
+  useEffect(() => () => {
+    if (glitchTimeoutRef.current) clearTimeout(glitchTimeoutRef.current);
+  }, []);
 
   return (
     <section
@@ -148,7 +144,7 @@ export const Hero = ({ onTransitionComplete }: HeroProps) => {
             onClick={handleBrainClick}
             className="relative z-10 w-full max-w-3xl transform scale-75 md:scale-100 flex items-center justify-center cursor-pointer"
           >
-            <SvgAnimation isFrenetic={phase === "frenetic"} isGlitching={isGlobalGlitch} />
+            <SvgAnimation isFrenetic={phase === "frenetic"} isGlitching={isGlobalGlitch} onBrainPulse={handleBrainPulse} />
           </motion.div>
         )}
       </AnimatePresence>
