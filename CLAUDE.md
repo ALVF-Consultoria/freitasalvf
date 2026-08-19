@@ -71,4 +71,8 @@ Video, audio, and images are static files in `public/`, referenced by absolute p
 - Path alias `@/*` → `src/*`. Both alias and relative imports are in use; match the file you're editing.
 - Tailwind v4 via PostCSS only — `@import "tailwindcss"` in `src/app/globals.css`, no `tailwind.config`. Fonts (Inter, Outfit) come from `next/font` as CSS variables in `layout.tsx`.
 - Static export means external destinations use `window.open` / `<a target="_blank">` (e.g. `storytellingnaia.alvf.net.br`, `alvf.net.br`, LinkedIn). Screens that aren't ready show the inline "Disponível em Breve" overlay in `DashboardToNaia` rather than a route.
+- `docs/seo-e-crawlers.md` records why the prerendered HTML contains only 37 characters of
+  text (the loading curtain gates everything, and `activeSection` renders one section at a
+  time), what that costs with JS-executing vs. non-executing crawlers, and the staged plan.
+  Read it before touching metadata, routing, or anything SEO-adjacent.
 - Unused scaffolding that nothing imports: `src/components/ui/{Button,Card}.tsx`, `src/components/common/{Container,Footer}.tsx`, `src/components/NeuralLink3D.tsx`, `src/components/blockchain/BinaryRain.tsx`, and `src/lib/gsap.ts` (GSAP + ScrollTrigger are installed and registered but no component uses them). Prefer the framer-motion patterns already in the sections over reviving these.

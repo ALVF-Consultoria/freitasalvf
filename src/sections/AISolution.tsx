@@ -152,7 +152,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
                     <h2 className="text-4xl md:text-8xl font-black text-white uppercase tracking-tighter drop-shadow-[0_0_20px_rgba(34,211,238,0.5)] leading-none">
                       NAIA <span className="text-cyan-400">Avaliativa</span>
                     </h2>
-                    <p className="text-cyan-400 font-mono text-sm md:text-2xl tracking-[0.2em] md:tracking-[0.4em] uppercase mt-4 md:mt-2 opacity-80">Interface Autônoma</p>
+                    <p className="text-cyan-400 font-mono text-sm md:text-2xl tracking-[0.2em] md:tracking-[0.4em] uppercase mt-4 md:mt-2 opacity-80">em desenvolvimento</p>
                   </motion.div>
                   {step >= 2 && (
                     <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="max-w-2xl text-white/80 text-base md:text-2xl italic font-light px-2">
@@ -292,11 +292,11 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
                     <h2 className="text-4xl md:text-8xl text-white drop-shadow-[0_0_30px_rgba(16,185,129,0.5)] leading-none">
                       NAIA <span className="text-emerald-400">Business</span>
                     </h2>
-                    <p className="text-emerald-400 font-mono text-sm md:text-2xl tracking-[0.2em] md:tracking-[0.4em] mt-4 md:mt-2 opacity-80">WhatsApp & Dashboard</p>
+                    <p className="text-emerald-400 font-mono text-sm md:text-2xl tracking-[0.2em] md:tracking-[0.4em] mt-4 md:mt-2 opacity-80">Atendimento Whatsapp</p>
                   </div>
                   {step >= 16 && (
                     <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl text-white/80 text-base md:text-2xl italic font-light px-2">
-                      Revolucione seu atendimento e converta mais com automação inteligente e visão total do seu funil de vendas.
+                      Revolucione seu atendimento e converta mais com automação inteligente e visão total do seu funil de atendimento.
                     </motion.p>
                   )}
                 </div>

@@ -58,15 +58,15 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateTo
         pos: isMobile ? { top: "30%", left: "30%" } : (isTablet ? { top: "34%", left: "34%" } : { top: "18%", left: "33%" })
       },
       {
-        id: 8, word: "NAIA", onNavigate: onNavigateToNaia,
+        id: 5, word: "HÁ 30 ANOS", onNavigate: onNavigateToHeritage,
         pos: isMobile ? { top: "42%", left: "25%" } : (isTablet ? { top: "45%", left: "30%" } : { top: "34%", left: "28%" })
       },
       {
-        id: 5, word: "HÁ 30 ANOS", onNavigate: onNavigateToHeritage,
+        id: 7, word: "B2B", onNavigate: onNavigateToB2B,
         pos: isMobile ? { top: "58%", left: "25%" } : (isTablet ? { top: "55%", left: "30%" } : { top: "52%", left: "28%" })
       },
       {
-        id: 7, word: "B2B", onNavigate: onNavigateToB2B,
+        id: 8, word: "Concessionária", onNavigate: onNavigateToNaia,
         pos: isMobile ? { top: "70%", left: "30%" } : (isTablet ? { top: "66%", left: "34%" } : { top: "71%", left: "30%" })
       },
 
