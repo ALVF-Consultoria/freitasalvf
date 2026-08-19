@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Hero } from "@/sections/Hero";
 import { Dashboard } from "@/sections/Dashboard";
-import { AISolution } from "@/sections/AISolution";
-import { AITransition } from "@/components/AITransition";
 import { BlockchainTransition } from "@/components/BlockchainTransition";
 import { MetaverseTransition } from "@/components/MetaverseTransition";
 import { StorytellingSolution } from "@/sections/StorytellingSolution";
@@ -22,32 +21,64 @@ import { DashboardToNaia } from "@/sections/DashboardToNaia";
 import { BackgroundMusic } from "@/components/common/BackgroundMusic";
 import { LoadingCurtain } from "@/components/common/LoadingCurtain";
 
+type Section =
+  | "hero" | "dashboard"
+  | "blockchain-transition" | "blockchain-solution"
+  | "metaverse-transition" | "metaverse-solution"
+  | "storytelling-transition" | "storytelling-solution"
+  | "b2b-transition" | "b2b-solution"
+  | "education-transition" | "education-solution"
+  | "heritage-transition" | "heritage-solution"
+  | "dashboard-naia";
+
+const ENTERED_KEY = "alvf:entered";
+const noopSubscribe = () => () => {};
+
 export default function Home() {
+  const router = useRouter();
+
+  // Secoes que viraram rota saem desta pagina e voltam para ela. Sem retomar o
+  // dashboard, o retorno cairia no hero e obrigaria a rever o video de abertura.
+  // useSyncExternalStore em vez de setState num efeito: o snapshot do servidor e
+  // false e o do cliente le o sessionStorage, entao a hidratacao nao quebra.
+  const hasEntered = useSyncExternalStore(
+    noopSubscribe,
+    () => sessionStorage.getItem(ENTERED_KEY) === "1",
+    () => false
+  );
+
   const [isAppLoading, setIsAppLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState<"hero" | "dashboard" | "ai-transition" | "ai-solution" | "blockchain-transition" | "blockchain-solution" | "metaverse-transition" | "metaverse-solution" | "storytelling-transition" | "storytelling-solution" | "b2b-transition" | "b2b-solution" | "education-transition" | "education-solution" | "heritage-transition" | "heritage-solution" | "dashboard-naia">("hero");
+  const [navigatedSection, setNavigatedSection] = useState<Section | null>(null);
+
+  const section: Section = navigatedSection ?? (hasEntered ? "dashboard" : "hero");
+  const showCurtain = isAppLoading && !hasEntered;
+
+  useEffect(() => {
+    if (section !== "hero") sessionStorage.setItem(ENTERED_KEY, "1");
+  }, [section]);
 
   return (
     <main className="min-h-screen bg-[#050505] overflow-hidden">
       <AnimatePresence>
-        {isAppLoading && (
+        {showCurtain && (
           <LoadingCurtain onComplete={() => setIsAppLoading(false)} />
         )}
       </AnimatePresence>
 
-      {!isAppLoading && (
+      {!showCurtain && (
         <AnimatePresence>
-        {activeSection === "hero" && (
+        {section === "hero" && (
           <motion.div
             key="hero-section"
             exit={{ opacity: 0 }}
             transition={{ duration: 1.5, ease: "easeInOut" }}
             className="absolute inset-0 w-full h-full"
           >
-            <Hero onTransitionComplete={() => setActiveSection("dashboard")} />
+            <Hero onTransitionComplete={() => setNavigatedSection("dashboard")} />
           </motion.div>
         )}
 
-        {activeSection === "dashboard" && (
+        {section === "dashboard" && (
           <motion.div
             key="dashboard-section"
             initial={{ opacity: 0 }}
@@ -57,43 +88,19 @@ export default function Home() {
             className="absolute inset-0 w-full h-full"
           >
             <Dashboard
-              onNavigateToAI={() => setActiveSection("ai-transition")}
-              onNavigateToBlockchain={() => setActiveSection("blockchain-transition")}
-              onNavigateToMetaverse={() => setActiveSection("metaverse-transition")}
-              onNavigateToStorytelling={() => setActiveSection("storytelling-transition")}
-              onNavigateToB2B={() => setActiveSection("b2b-transition")}
-              onNavigateToEducation={() => setActiveSection("education-transition")}
-              onNavigateToHeritage={() => setActiveSection("heritage-transition")}
-              onNavigateToNaia={() => setActiveSection("dashboard-naia")}
+              onNavigateToAI={() => router.push("/solucoes-ia")}
+              onNavigateToBlockchain={() => setNavigatedSection("blockchain-transition")}
+              onNavigateToMetaverse={() => setNavigatedSection("metaverse-transition")}
+              onNavigateToStorytelling={() => setNavigatedSection("storytelling-transition")}
+              onNavigateToB2B={() => setNavigatedSection("b2b-transition")}
+              onNavigateToEducation={() => setNavigatedSection("education-transition")}
+              onNavigateToHeritage={() => setNavigatedSection("heritage-transition")}
+              onNavigateToNaia={() => setNavigatedSection("dashboard-naia")}
             />
           </motion.div>
         )}
 
-        {activeSection === "ai-transition" && (
-          <motion.div
-            key="ai-transition-screen"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
-            transition={{ duration: 0.8 }}
-          >
-            <AITransition onComplete={() => setActiveSection("ai-solution")} />
-          </motion.div>
-        )}
-
-        {activeSection === "ai-solution" && (
-          <motion.div
-            key="ai-solution-section"
-            initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <AISolution onBack={() => setActiveSection("dashboard")} />
-          </motion.div>
-        )}
-
-        {activeSection === "blockchain-transition" && (
+        {section === "blockchain-transition" && (
           <motion.div
             key="blockchain-transition-screen"
             initial={{ opacity: 0 }}
@@ -101,11 +108,11 @@ export default function Home() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <BlockchainTransition onComplete={() => setActiveSection("blockchain-solution")} />
+            <BlockchainTransition onComplete={() => setNavigatedSection("blockchain-solution")} />
           </motion.div>
         )}
 
-        {activeSection === "blockchain-solution" && (
+        {section === "blockchain-solution" && (
           <motion.div
             key="blockchain-solution-section"
             initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
@@ -113,11 +120,11 @@ export default function Home() {
             exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <BlockchainSolution onBack={() => setActiveSection("dashboard")} />
+            <BlockchainSolution onBack={() => setNavigatedSection("dashboard")} />
           </motion.div>
         )}
 
-        {activeSection === "metaverse-transition" && (
+        {section === "metaverse-transition" && (
           <motion.div
             key="metaverse-transition-screen"
             initial={{ opacity: 0 }}
@@ -125,11 +132,11 @@ export default function Home() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <MetaverseTransition onComplete={() => setActiveSection("metaverse-solution")} />
+            <MetaverseTransition onComplete={() => setNavigatedSection("metaverse-solution")} />
           </motion.div>
         )}
 
-        {activeSection === "metaverse-solution" && (
+        {section === "metaverse-solution" && (
           <motion.div
             key="metaverse-solution-section"
             initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
@@ -137,11 +144,11 @@ export default function Home() {
             exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <MetaverseSolution onBack={() => setActiveSection("dashboard")} />
+            <MetaverseSolution onBack={() => setNavigatedSection("dashboard")} />
           </motion.div>
         )}
 
-        {activeSection === "storytelling-transition" && (
+        {section === "storytelling-transition" && (
           <motion.div
             key="storytelling-transition-screen"
             initial={{ opacity: 0 }}
@@ -149,11 +156,11 @@ export default function Home() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <StorytellingTransition onComplete={() => setActiveSection("storytelling-solution")} />
+            <StorytellingTransition onComplete={() => setNavigatedSection("storytelling-solution")} />
           </motion.div>
         )}
 
-        {activeSection === "storytelling-solution" && (
+        {section === "storytelling-solution" && (
           <motion.div
             key="storytelling-solution-section"
             initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
@@ -161,11 +168,11 @@ export default function Home() {
             exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <StorytellingSolution onBack={() => setActiveSection("dashboard")} />
+            <StorytellingSolution onBack={() => setNavigatedSection("dashboard")} />
           </motion.div>
         )}
 
-        {activeSection === "b2b-transition" && (
+        {section === "b2b-transition" && (
           <motion.div
             key="b2b-transition-screen"
             initial={{ opacity: 0 }}
@@ -173,11 +180,11 @@ export default function Home() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <B2BTransition onComplete={() => setActiveSection("b2b-solution")} />
+            <B2BTransition onComplete={() => setNavigatedSection("b2b-solution")} />
           </motion.div>
         )}
 
-        {activeSection === "b2b-solution" && (
+        {section === "b2b-solution" && (
           <motion.div
             key="b2b-solution-section"
             initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
@@ -185,11 +192,11 @@ export default function Home() {
             exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <B2BSolution onBack={() => setActiveSection("dashboard")} />
+            <B2BSolution onBack={() => setNavigatedSection("dashboard")} />
           </motion.div>
         )}
 
-        {activeSection === "education-transition" && (
+        {section === "education-transition" && (
           <motion.div
             key="education-transition-screen"
             initial={{ opacity: 0 }}
@@ -197,11 +204,11 @@ export default function Home() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <EducationTransition onComplete={() => setActiveSection("education-solution")} />
+            <EducationTransition onComplete={() => setNavigatedSection("education-solution")} />
           </motion.div>
         )}
 
-        {activeSection === "education-solution" && (
+        {section === "education-solution" && (
           <motion.div
             key="education-solution-section"
             initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
@@ -209,11 +216,11 @@ export default function Home() {
             exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <EducationSolution onBack={() => setActiveSection("dashboard")} />
+            <EducationSolution onBack={() => setNavigatedSection("dashboard")} />
           </motion.div>
         )}
 
-        {activeSection === "heritage-transition" && (
+        {section === "heritage-transition" && (
           <motion.div
             key="heritage-transition-screen"
             initial={{ opacity: 0 }}
@@ -221,11 +228,11 @@ export default function Home() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <HeritageTransition onComplete={() => setActiveSection("heritage-solution")} />
+            <HeritageTransition onComplete={() => setNavigatedSection("heritage-solution")} />
           </motion.div>
         )}
 
-        {activeSection === "heritage-solution" && (
+        {section === "heritage-solution" && (
           <motion.div
             key="heritage-solution-section"
             initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
@@ -233,11 +240,11 @@ export default function Home() {
             exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <HeritageSolution onBack={() => setActiveSection("dashboard")} />
+            <HeritageSolution onBack={() => setNavigatedSection("dashboard")} />
           </motion.div>
         )}
 
-        {activeSection === "dashboard-naia" && (
+        {section === "dashboard-naia" && (
           <motion.div
             key="dashboard-naia-section"
             initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
@@ -245,7 +252,7 @@ export default function Home() {
             exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <DashboardToNaia onBack={() => setActiveSection("dashboard")} />
+            <DashboardToNaia onBack={() => setNavigatedSection("dashboard")} />
           </motion.div>
         )}
       </AnimatePresence>

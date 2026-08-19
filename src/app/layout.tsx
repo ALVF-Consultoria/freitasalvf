@@ -13,7 +13,12 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "FreitasALVF",
+  // O template compoe o titulo das rotas filhas: "Solucoes em IA" vira
+  // "Solucoes em IA | FreitasALVF". O default vale so para a raiz.
+  title: {
+    default: "FreitasALVF",
+    template: "%s | FreitasALVF",
+  },
   description: "",
 };
 

@@ -88,8 +88,16 @@ const naiaBusinessFeatures = [
 
 export const AISolution = ({ onBack }: AISolutionProps) => {
   const isMobile = useMobile();
+  // As duas telas de conceito vinham do antigo AITransition e agora abrem a
+  // propria secao. contentStep preserva a numeracao original dos blocos (1..21),
+  // para as guardas abaixo nao precisarem ser deslocadas.
+  const INTRO_STEPS = 2;
+  const CONTENT_STEPS = 21;
+
   const [step, setStep] = useState(1);
-  const totalSteps = 21;
+  const totalSteps = INTRO_STEPS + CONTENT_STEPS;
+  const contentStep = step - INTRO_STEPS;
+  const isIntro = step <= INTRO_STEPS;
 
   useStepNavigation({
     onNext: () => {
@@ -97,7 +105,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
       else onBack();
     },
     onPrev: () => setStep((prev) => (prev > 1 ? prev - 1 : prev)),
-    cooldown: 700,
+    cooldown: isIntro ? 1500 : 700,
   });
 
   return (
@@ -111,13 +119,18 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
       <motion.div 
         animate={{ 
           backgroundColor: 
-            step <= 7 ? "rgba(8, 145, 178, 0.08)" : 
-            step <= 14 ? "rgba(37, 99, 235, 0.08)" : 
+            contentStep <= 7 ? "rgba(8, 145, 178, 0.08)" : 
+            contentStep <= 16 ? "rgba(37, 99, 235, 0.08)" : 
             "rgba(16, 185, 129, 0.08)"
         }}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] blur-[180px] rounded-full pointer-events-none transition-colors duration-1000" 
       />
       
+      {/* Scanline das telas de apresentacao (preservado do AITransition) */}
+      {isIntro && (
+        <div className="absolute inset-0 bg-linear-to-b from-transparent via-cyan-400/3 to-transparent bg-size-[100%_4px] pointer-events-none z-0" />
+      )}
+
       {/* Back Button */}
       <div className={`absolute ${isMobile ? 'top-6 left-6' : 'top-10 left-10'} z-50`}>
         <motion.button
@@ -135,9 +148,54 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
 
       <div className="relative z-10 w-full max-w-7xl flex flex-col items-center justify-center min-h-[60vh]">
         
-        {/* === AVALIATIVA (1-6) === */}
+        {/* === APRESENTACAO (steps 1-2) — herdado do antigo AITransition === */}
         <AnimatePresence mode="wait">
-          {(step === 1 || step === 2) && (
+          {step === 1 && (
+            <motion.div
+              key="intro-quote"
+              initial={{ opacity: 0, scale: 0.5, filter: "blur(20px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 1.5, filter: "blur(30px)" }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              className="flex flex-col items-center absolute w-full max-w-4xl px-4"
+            >
+              <span className="text-cyan-400 font-mono text-[10px] tracking-[0.5em] uppercase mb-6 md:mb-8 block opacity-50">
+                INTERFACE AUTÔNOMA_ATIVADA
+              </span>
+              <h2 className="text-2xl md:text-4xl font-light text-white leading-relaxed tracking-tight italic">
+                &quot;Indo muito além das limitadas IAs <span className="text-cyan-400/50">(pseudo inteligência artificial)</span>, nossa <span className="text-cyan-400 font-bold">Interface Autônoma</span>, gera integração da necessidade com as soluções.&quot;
+              </h2>
+            </motion.div>
+          )}
+
+          {step === 2 && (
+            <motion.div
+              key="intro-brand"
+              initial={{ opacity: 0, scale: 0.8, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 1.2, filter: "blur(20px)" }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="flex flex-col items-center absolute w-full px-4 text-center"
+            >
+              <span className="text-cyan-400 font-mono text-xs tracking-[0.6em] uppercase mb-4 opacity-70">
+                AGENTE INTELIGENTE
+              </span>
+              <h3 className="text-6xl md:text-9xl font-black text-white uppercase tracking-tighter drop-shadow-[0_0_30px_rgba(34,211,238,0.6)]">
+                NA<span className="text-cyan-400 text-glow">IA</span>
+              </h3>
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 0.8, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="mt-4 text-cyan-400/80 font-mono text-sm md:text-xl tracking-[0.3em] uppercase italic"
+              >
+                Nano Agente Interface Autônoma
+              </motion.p>
+            </motion.div>
+          )}
+
+          {/* === AVALIATIVA === */}
+          {(contentStep === 1 || contentStep === 2) && (
             <motion.div
               key="aval-intro"
               initial={{ opacity: 0, scale: 0.5, rotateY: 20, filter: "blur(20px)" }}
@@ -154,7 +212,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
                     </h2>
                     <p className="text-cyan-400 font-mono text-sm md:text-2xl tracking-[0.2em] md:tracking-[0.4em] uppercase mt-4 md:mt-2 opacity-80">em desenvolvimento</p>
                   </motion.div>
-                  {step >= 2 && (
+                  {contentStep >= 2 && (
                     <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="max-w-2xl text-white/80 text-base md:text-2xl italic font-light px-2">
                       Plataforma educacional com IA. Criação, aplicação e correção de provas de forma totalmente automatizada e segura para instituições.
                     </motion.p>
@@ -164,7 +222,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
             </motion.div>
           )}
 
-          {(step >= 3 && step <= 6) && (
+          {(contentStep >= 3 && contentStep <= 6) && (
             <motion.div
               key="aval-cards"
               initial={{ opacity: 0, rotateX: 10 }}
@@ -178,7 +236,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, scale: 0.8, z: -100 }}
-                      animate={step > i + 2 ? { opacity: 1, scale: 1, z: 0 } : { opacity: 0 }}
+                      animate={contentStep > i + 2 ? { opacity: 1, scale: 1, z: 0 } : { opacity: 0 }}
                       className="p-6 md:p-8 rounded-[24px] md:rounded-[32px] border border-cyan-400/20 bg-cyan-950/20 backdrop-blur-3xl shadow-[0_0_30px_rgba(34,211,238,0.05)]"
                     >
                       <div className="mb-4 md:mb-6 p-4 md:p-5 rounded-2xl bg-cyan-400/10 text-cyan-400 inline-block">{f.icon}</div>
@@ -191,7 +249,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
             </motion.div>
           )}
 
-          {step === 7 && (
+          {contentStep === 7 && (
             <motion.div
               key="bridge-1"
               initial={{ opacity: 0, scale: 0.2, filter: "blur(30px)" }}
@@ -208,7 +266,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
           )}
 
           {/* === STORYTELLING (8-13) === */}
-          {(step === 8 || step === 9) && (
+          {(contentStep === 8 || contentStep === 9) && (
             <motion.div
               key="story-intro"
               initial={{ opacity: 0, x: -100, skewX: 10, filter: "blur(20px)" }}
@@ -224,7 +282,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
                     </h2>
                     <p className="text-blue-400 font-mono text-sm md:text-2xl tracking-[0.2em] md:tracking-[0.4em] mt-4 md:mt-2 opacity-80">Histórias Autônomas</p>
                   </div>
-                  {step >= 9 && (
+                  {contentStep >= 9 && (
                     <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl text-white/80 text-base md:text-2xl italic font-light px-2">
                       Geração automática de histórias a partir das suas respostas. Conteúdo emocional focado em audiência e engajamento.
                     </motion.p>
@@ -234,7 +292,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
             </motion.div>
           )}
 
-          {(step >= 10 && step <= 13) && (
+          {(contentStep >= 10 && contentStep <= 13) && (
             <motion.div
               key="story-cards"
               initial={{ opacity: 0, scale: 0.8 }}
@@ -248,7 +306,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, y: 50 }}
-                      animate={step > i + 9 ? { opacity: 1, y: 0 } : { opacity: 0 }}
+                      animate={contentStep > i + 9 ? { opacity: 1, y: 0 } : { opacity: 0 }}
                       className="p-6 md:p-8 rounded-[24px] md:rounded-[32px] border border-blue-500/20 bg-blue-950/10 backdrop-blur-3xl shadow-[0_0_30px_rgba(59,130,246,0.05)]"
                     >
                       <div className="mb-4 md:mb-6 p-4 md:p-5 rounded-2xl bg-blue-500/10 text-blue-400 inline-block">{f.icon}</div>
@@ -261,7 +319,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
             </motion.div>
           )}
 
-          {step === 14 && (
+          {contentStep === 14 && (
             <motion.div
               key="bridge-2"
               initial={{ opacity: 0, scale: 1.5, filter: "blur(30px)" }}
@@ -278,7 +336,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
           )}
 
           {/* === BUSINESS AUTOMATION (15-21) === */}
-          {(step === 15 || step === 16) && (
+          {(contentStep === 15 || contentStep === 16) && (
             <motion.div
               key="biz-intro"
               initial={{ opacity: 0, scale: 2, filter: "blur(50px)" }}
@@ -294,7 +352,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
                     </h2>
                     <p className="text-emerald-400 font-mono text-sm md:text-2xl tracking-[0.2em] md:tracking-[0.4em] mt-4 md:mt-2 opacity-80">Atendimento Whatsapp</p>
                   </div>
-                  {step >= 16 && (
+                  {contentStep >= 16 && (
                     <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl text-white/80 text-base md:text-2xl italic font-light px-2">
                       Revolucione seu atendimento e converta mais com automação inteligente e visão total do seu funil de atendimento.
                     </motion.p>
@@ -304,7 +362,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
             </motion.div>
           )}
 
-          {(step >= 17 && step <= 20) && (
+          {(contentStep >= 17 && contentStep <= 20) && (
             <motion.div
               key="biz-cards"
               initial={{ opacity: 0 }}
@@ -318,7 +376,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, scale: 0, rotateY: 180 }}
-                      animate={step > i + 16 ? { opacity: 1, scale: 1, rotateY: 0 } : { opacity: 0 }}
+                      animate={contentStep > i + 16 ? { opacity: 1, scale: 1, rotateY: 0 } : { opacity: 0 }}
                       transition={{ type: "spring", stiffness: 100 }}
                       className="p-6 md:p-8 rounded-[24px] md:rounded-[32px] border border-emerald-500/20 bg-emerald-950/10 backdrop-blur-3xl shadow-[0_0_40px_rgba(16,185,129,0.1)]"
                     >
@@ -332,7 +390,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
             </motion.div>
           )}
 
-          {step === 21 && (
+          {contentStep === 21 && (
             <motion.div
               key="final-close"
               initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
@@ -361,7 +419,7 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
           )}
         </AnimatePresence>
  
-        {(step === 1 && !isMobile) && <ScrollIndicator />}
+        {(contentStep === 1 && !isMobile) && <ScrollIndicator />}
  
         {/* PROCEED INDICATOR */}
         {step < totalSteps && (
@@ -378,8 +436,8 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
       {/* Footer Labels */}
       <div className={`absolute bottom-6 left-8 flex flex-col gap-1 opacity-20 font-mono text-[8px] text-white pointer-events-none uppercase text-left ${isMobile ? 'hidden sm:flex' : ''}`}>
         <span>PROTOCOLO_AGENTE: NAIA_V6.1.0</span>
-        <span>MÓDULO_ATIVO: {step <= 7 ? 'AVALIATIVA' : step <= 14 ? 'STORYTELLING' : 'INTELIGÊNCIA_NEGÓCIOS'}</span>
-        <span>BUFFER_SEQUÊNCIA: {step}/21</span>
+        <span>MÓDULO_ATIVO: {isIntro ? 'APRESENTAÇÃO' : contentStep <= 7 ? 'AVALIATIVA' : contentStep <= 14 ? 'STORYTELLING' : 'INTELIGÊNCIA_NEGÓCIOS'}</span>
+        <span>BUFFER_SEQUÊNCIA: {step}/{totalSteps}</span>
       </div>
     </section>
   );

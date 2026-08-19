@@ -114,7 +114,7 @@ export const B2BSolution = ({ onBack }: B2BSolutionProps) => {
                 <Database className="w-8 h-8 md:w-12 md:h-12 text-emerald-400" />
               </motion.div>
               <h2 className="text-3xl md:text-7xl font-black text-white uppercase tracking-tighter leading-none mb-4">
-                ALVF <span className="text-emerald-500">CONSULTORIA</span>
+                <a className="text-emerald-500">alvf.net.br</a>
               </h2>
               <p className="text-white/40 font-mono text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.5em] mb-8 md:mb-12">NÚCLEO DE ALTO IMPACTO TECNOLÓGICO</p>
             </div>
