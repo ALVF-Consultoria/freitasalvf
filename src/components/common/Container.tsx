@@ -6,7 +6,9 @@ import { cn } from '@/utils/cn';
 interface ContainerProps {
   children: React.ReactNode;
   className?: string;
-  as?: React.ElementType;
+  // Restrito a elementos que aceitam className: React.ElementType puro inclui os
+  // elementos three.js que o react-three-fiber adiciona a JSX.IntrinsicElements.
+  as?: React.ElementType<{ className?: string }>;
 }
 
 export const Container = ({

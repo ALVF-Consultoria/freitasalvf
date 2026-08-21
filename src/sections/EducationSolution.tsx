@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { educationContent } from "../constants/educationData";
 import { useStepNavigation } from "../hooks/useStepNavigation";
-import { ArrowLeft, Cpu, Bot, Mic, Link as LinkIcon, LineChart, Wifi, GraduationCap, UserCheck, Search } from "lucide-react";
+import { ArrowLeft, Cpu, Bot, Mic, Link as LinkIcon, LineChart, Wifi, GraduationCap, UserCheck, Search, type LucideIcon } from "lucide-react";
 import { ParticlesBackground } from "../components/ParticlesBackground";
 import { ScrollIndicator } from "../components/common/ScrollIndicator";
 import { useMobile } from "@/hooks/useMobile";
@@ -14,7 +14,10 @@ interface EducationSolutionProps {
   onBack: () => void;
 }
 
-const iconMap: Record<string, React.ElementType> = {
+// LucideIcon em vez de React.ElementType: o mapa so guarda icones do lucide, e
+// React.ElementType abrange keyof JSX.IntrinsicElements — que o react-three-fiber
+// aumenta com ~200 elementos three.js sem className, colapsando as props para never.
+const iconMap: Record<string, LucideIcon> = {
   Bot, Cpu, Mic, Link: LinkIcon, LineChart, Wifi, GraduationCap, UserCheck, Search
 };
 

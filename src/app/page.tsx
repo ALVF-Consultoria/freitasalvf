@@ -31,7 +31,11 @@ type Section =
   | "heritage-transition" | "heritage-solution"
   | "dashboard-naia";
 
-const ENTERED_KEY = "alvf:entered";
+// Modulo, nao sessionStorage: um router.push entre rotas nao recarrega o
+// documento, entao esta variavel sobrevive a ida e volta para /solucoes-ia e
+// zera num F5 — que e exatamente a diferenca entre "voltei de uma rota" e
+// "abri a pagina de novo". Com sessionStorage o hero sumia ate fechar a aba.
+let hasEnteredDocument = false;
 const noopSubscribe = () => () => {};
 
 export default function Home() {
@@ -40,10 +44,10 @@ export default function Home() {
   // Secoes que viraram rota saem desta pagina e voltam para ela. Sem retomar o
   // dashboard, o retorno cairia no hero e obrigaria a rever o video de abertura.
   // useSyncExternalStore em vez de setState num efeito: o snapshot do servidor e
-  // false e o do cliente le o sessionStorage, entao a hidratacao nao quebra.
+  // false e o do cliente le a variavel de modulo, entao a hidratacao nao quebra.
   const hasEntered = useSyncExternalStore(
     noopSubscribe,
-    () => sessionStorage.getItem(ENTERED_KEY) === "1",
+    () => hasEnteredDocument,
     () => false
   );
 
@@ -54,7 +58,7 @@ export default function Home() {
   const showCurtain = isAppLoading && !hasEntered;
 
   useEffect(() => {
-    if (section !== "hero") sessionStorage.setItem(ENTERED_KEY, "1");
+    if (section !== "hero") hasEnteredDocument = true;
   }, [section]);
 
   return (

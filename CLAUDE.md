@@ -37,9 +37,28 @@ Adding a screen means three edits in `page.tsx`: extend the `activeSection` unio
 
 Each `*Solution` section and each `*Transition` component is driven by a numeric `step` counter advanced by `useStepNavigation` (`src/hooks/useStepNavigation.ts`) — global wheel + touch-swipe listeners with a cooldown (usually 1200ms). Scrolling past the last step calls `onBack()` / `onComplete()`, scrolling back below step 1 is clamped.
 
-Step ranges map to content two ways:
+Step ranges map to content three ways, in descending order of how much you should
+prefer them:
+
+- **Folder per section** — `src/sections/AISolution/` is the current target shape and the
+  model for migrating the rest. `index.tsx` is the orchestrator and owns everything
+  stateful: `step`, `useStepNavigation`, the step constants, the `AnimatePresence`, the
+  chrome (HUD, scanline, back button, ambient light, `ScrollIndicator`). The siblings
+  (`IntroSteps`, `AvaliativaStep`, `StorytellingStep`, `BusinessStep`) take `contentStep`
+  as a prop, return one `motion.div` each, and hold no navigation hooks. `features.tsx`
+  holds the card data. Nothing outside the folder imports the children, so they can be
+  reshuffled freely — `view.tsx` only ever imports `@/sections/AISolution`, which resolves
+  to `index.tsx`.
 - **Extracted sub-components** — `BlockchainSolution` (15 steps) delegates to `src/components/blockchain/*Step.tsx`.
-- **Inline blocks** — `AISolution` (21 steps), `HeritageSolution`, etc. keep the JSX in the section file behind `{step === n && ...}` guards inside `<AnimatePresence mode="wait">`.
+- **Inline blocks** — `HeritageSolution`, `MetaverseSolution`, etc. keep the JSX in the section file behind `{step === n && ...}` guards inside `<AnimatePresence mode="wait">`.
+
+**The `key` belongs on the direct child of `<AnimatePresence>`, not on the `motion.div`
+inside the extracted component.** `AnimatePresence` identifies children by
+`child.key || ""`, so `{step === 1 && <IntroStep />}` and `{step === 2 && <FeatureStep />}`
+both read as key `""` — it sees no change and skips the exit animation entirely.
+`BlockchainSolution` has this bug today; `AISolution/index.tsx` avoids it by writing
+`{step === 1 && <IntroQuote key="intro-quote" />}`. Copy the AISolution form when
+migrating.
 
 `useStepNavigation` deliberately walks up the DOM (`isAtScrollBoundary`) and refuses to advance while the event target sits inside a scrollable element that hasn't hit its top/bottom. This is what makes mobile work: content too tall for a phone gets wrapped in `MobileScrollWrapper`, which becomes an internal scroller below 768px and a passthrough above it. It lives in `src/components/blockchain/` for historical reasons but is used by most sections — don't assume that directory is blockchain-only.
 
@@ -61,7 +80,24 @@ Each area has an accent color used consistently across its transition, section, 
 
 ### 3D and media
 
-`three` is used imperatively (no react-three-fiber): `NeuralConnectionSystem` renders an orthographic overlay of bezier "bubble filaments" from the dashboard center to each node's percentage position, and `ParticlesBackground` is the ambient layer nearly every screen mounts. Both build the scene in a `useEffect` and must dispose/remove the canvas in the cleanup.
+`three` is used two ways. Imperatively, without react-three-fiber: `NeuralConnectionSystem`
+renders an orthographic overlay of bezier "bubble filaments" from the dashboard center to
+each node's percentage position, building the scene in a `useEffect` and disposing/removing
+the canvas in the cleanup. Declaratively, via `@react-three/fiber`: `Antigravity`
+(`src/components/Antigravity.tsx`, mounted on step 1 of the AI section) is an `<Canvas>`
+with an instanced particle field.
+
+Installing `@react-three/fiber` has a project-wide side effect worth knowing: it augments
+`JSX.IntrinsicElements` globally with ~200 three.js elements, none of which accept
+`className`. Any `React.ElementType` in the codebase then resolves its props to `never`.
+`Container.tsx` and `EducationSolution.tsx` were narrowed (`React.ElementType<{ className?:
+string }>` and `Record<string, LucideIcon>`) to fix this — narrow the same way rather than
+widening back.
+
+`ParticlesBackground` is **not** three.js despite the name — it is 100 (30 on mobile)
+absolutely-positioned `<div>`s animated with framer-motion, in three parallax layers driven
+by a spring on the mouse. Its container is `z-20`, so it floats above section content
+(`z-10`), not behind it.
 
 Video, audio, and images are static files in `public/`, referenced by absolute path. `VideoBackground` forwards a ref so `Dashboard` can drive `onTimeUpdate`. `YoutubeBackground` injects the YouTube IFrame API at runtime for looped background clips.
 
@@ -75,4 +111,9 @@ Video, audio, and images are static files in `public/`, referenced by absolute p
   text (the loading curtain gates everything, and `activeSection` renders one section at a
   time), what that costs with JS-executing vs. non-executing crawlers, and the staged plan.
   Read it before touching metadata, routing, or anything SEO-adjacent.
+- `src/components/Galaxy.tsx` (ogl/WebGL starfield) is written and typechecked but **not
+  mounted anywhere** — it was tried as the AI section's opening background and pulled back
+  out while a different treatment is chosen. It is the only thing importing `ogl`, and
+  tree-shaking keeps both out of the bundle while it stays unmounted. Delete both together
+  if the idea is dropped for good.
 - Unused scaffolding that nothing imports: `src/components/ui/{Button,Card}.tsx`, `src/components/common/{Container,Footer}.tsx`, `src/components/NeuralLink3D.tsx`, `src/components/blockchain/BinaryRain.tsx`, and `src/lib/gsap.ts` (GSAP + ScrollTrigger are installed and registered but no component uses them). Prefer the framer-motion patterns already in the sections over reviving these.
