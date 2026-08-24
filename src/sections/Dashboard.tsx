@@ -15,10 +15,10 @@ interface DashboardProps {
   onNavigateToB2B?: () => void;
   onNavigateToEducation?: () => void;
   onNavigateToHeritage?: () => void;
-  onNavigateToNaia?: () => void;
+  onNavigateToConcessionaria?: () => void;
 }
 
-export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateToMetaverse, onNavigateToStorytelling, onNavigateToB2B, onNavigateToEducation, onNavigateToHeritage, onNavigateToNaia }: DashboardProps) => {
+export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateToMetaverse, onNavigateToStorytelling, onNavigateToB2B, onNavigateToEducation, onNavigateToHeritage, onNavigateToConcessionaria }: DashboardProps) => {
   const [isVideoPaused, setIsVideoPaused] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
@@ -66,7 +66,7 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateTo
         pos: isMobile ? { top: "58%", left: "25%" } : (isTablet ? { top: "55%", left: "30%" } : { top: "52%", left: "28%" })
       },
       {
-        id: 8, word: "Concessionária", onNavigate: onNavigateToNaia,
+        id: 8, word: "Concessionária", onNavigate: onNavigateToConcessionaria,
         pos: isMobile ? { top: "70%", left: "30%" } : (isTablet ? { top: "66%", left: "34%" } : { top: "71%", left: "30%" })
       },
 
@@ -148,7 +148,7 @@ export const Dashboard = ({ onNavigateToAI, onNavigateToBlockchain, onNavigateTo
         );
       })
     };
-  }, [isVideoPaused, isMobile, isTablet, selectedId, onNavigateToAI, onNavigateToBlockchain, onNavigateToMetaverse, onNavigateToStorytelling, onNavigateToEducation, onNavigateToHeritage, onNavigateToB2B, onNavigateToNaia]);
+  }, [isVideoPaused, isMobile, isTablet, selectedId, onNavigateToAI, onNavigateToBlockchain, onNavigateToMetaverse, onNavigateToStorytelling, onNavigateToEducation, onNavigateToHeritage, onNavigateToB2B, onNavigateToConcessionaria]);
 
   const dashboardContainerRef = useRef<HTMLDivElement>(null);
 

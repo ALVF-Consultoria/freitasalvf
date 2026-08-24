@@ -18,6 +18,7 @@ import { MetaverseSolution } from "@/sections/MetaverseSolution";
 import { HeritageTransition } from "@/components/HeritageTransition";
 import { HeritageSolution } from "@/sections/HeritageSolution";
 import { DashboardToNaia } from "@/sections/DashboardToNaia";
+import { ConcessionariaSolution } from "@/sections/ConcessionariaSolution";
 import { BackgroundMusic } from "@/components/common/BackgroundMusic";
 import { LoadingCurtain } from "@/components/common/LoadingCurtain";
 
@@ -29,6 +30,9 @@ type Section =
   | "b2b-transition" | "b2b-solution"
   | "education-transition" | "education-solution"
   | "heritage-transition" | "heritage-solution"
+  | "concessionaria"
+  // Sem entrada: a nuvem Concessionaria era a unica porta para o hub NAIA e
+  // agora abre a propria tela. Religar e so apontar algum onNavigate para ca.
   | "dashboard-naia";
 
 // Modulo, nao sessionStorage: um router.push entre rotas nao recarrega o
@@ -99,7 +103,7 @@ export default function Home() {
               onNavigateToB2B={() => setNavigatedSection("b2b-transition")}
               onNavigateToEducation={() => setNavigatedSection("education-transition")}
               onNavigateToHeritage={() => setNavigatedSection("heritage-transition")}
-              onNavigateToNaia={() => setNavigatedSection("dashboard-naia")}
+              onNavigateToConcessionaria={() => setNavigatedSection("concessionaria")}
             />
           </motion.div>
         )}
@@ -245,6 +249,18 @@ export default function Home() {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <HeritageSolution onBack={() => setNavigatedSection("dashboard")} />
+          </motion.div>
+        )}
+
+        {section === "concessionaria" && (
+          <motion.div
+            key="concessionaria-section"
+            initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <ConcessionariaSolution onBack={() => setNavigatedSection("dashboard")} />
           </motion.div>
         )}
 

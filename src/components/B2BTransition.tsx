@@ -81,7 +81,7 @@ export const B2BTransition = ({ onComplete }: B2BTransitionProps) => {
               CONSULTORIA DE TI
             </span>
             <h3 className="text-6xl md:text-9xl font-black text-white uppercase tracking-tighter">
-              ALVF <span className="text-emerald-500 text-glow-emerald">CONSULTORIA</span>
+              ALVF<span className="text-emerald-500 text-glow-emerald">.NET.BR</span>
             </h3>
             
             <div className="mt-20 flex flex-col items-center gap-6">
