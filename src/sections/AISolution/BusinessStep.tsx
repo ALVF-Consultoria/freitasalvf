@@ -4,16 +4,19 @@ import { motion } from "framer-motion";
 import { TrendingUp } from "lucide-react";
 import { MobileScrollWrapper } from "@/components/blockchain/MobileScrollWrapper";
 import { naiaBusinessFeatures } from "./features";
+import { travelNormal, type TravelProps } from "./travel";
 
-interface StepProps {
+interface StepProps extends TravelProps {
   contentStep: number;
 }
 
-export const BusinessIntro = ({ contentStep }: StepProps) => (
+export const BusinessIntro = ({ contentStep, direction }: StepProps) => (
   <motion.div
-    initial={{ opacity: 0, scale: 2, filter: "blur(50px)" }}
-    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-    exit={{ opacity: 0, scale: 0.5, filter: "blur(30px)" }}
+    variants={travelNormal}
+    custom={direction}
+    initial="enter"
+    animate="center"
+    exit="exit"
     className="flex flex-col items-center absolute w-full px-4"
   >
     <MobileScrollWrapper accentColor="#10b981">
@@ -34,11 +37,13 @@ export const BusinessIntro = ({ contentStep }: StepProps) => (
   </motion.div>
 );
 
-export const BusinessCards = ({ contentStep }: StepProps) => (
+export const BusinessCards = ({ contentStep, direction }: StepProps) => (
   <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0, scale: 0, rotate: 180, filter: "blur(50px)" }}
+    variants={travelNormal}
+    custom={direction}
+    initial="enter"
+    animate="center"
+    exit="exit"
     className="w-full"
   >
     <MobileScrollWrapper accentColor="#10b981" maxHeight="75vh">
@@ -61,10 +66,13 @@ export const BusinessCards = ({ contentStep }: StepProps) => (
   </motion.div>
 );
 
-export const BusinessClose = () => (
+export const BusinessClose = ({ direction }: TravelProps) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
-    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+    variants={travelNormal}
+    custom={direction}
+    initial="enter"
+    animate="center"
+    exit="exit"
     className="flex flex-col items-center absolute w-full max-w-4xl px-4"
   >
     <MobileScrollWrapper accentColor="#10b981">

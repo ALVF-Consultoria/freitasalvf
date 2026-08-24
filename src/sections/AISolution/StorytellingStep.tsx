@@ -4,16 +4,19 @@ import { motion } from "framer-motion";
 import { Rocket } from "lucide-react";
 import { MobileScrollWrapper } from "@/components/blockchain/MobileScrollWrapper";
 import { naiaStorytellingFeatures } from "./features";
+import { travelNormal, travelPunch, type TravelProps } from "./travel";
 
-interface StepProps {
+interface StepProps extends TravelProps {
   contentStep: number;
 }
 
-export const StorytellingIntro = ({ contentStep }: StepProps) => (
+export const StorytellingIntro = ({ contentStep, direction }: StepProps) => (
   <motion.div
-    initial={{ opacity: 0, x: -100, skewX: 10, filter: "blur(20px)" }}
-    animate={{ opacity: 1, x: 0, skewX: 0, filter: "blur(0px)" }}
-    exit={{ opacity: 0, x: 100, skewX: -10, filter: "blur(30px)" }}
+    variants={travelNormal}
+    custom={direction}
+    initial="enter"
+    animate="center"
+    exit="exit"
     className="flex flex-col items-center absolute w-full px-4"
   >
     <MobileScrollWrapper accentColor="#3b82f6">
@@ -34,11 +37,13 @@ export const StorytellingIntro = ({ contentStep }: StepProps) => (
   </motion.div>
 );
 
-export const StorytellingCards = ({ contentStep }: StepProps) => (
+export const StorytellingCards = ({ contentStep, direction }: StepProps) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.8 }}
-    animate={{ opacity: 1, scale: 1 }}
-    exit={{ opacity: 0, x: -500, filter: "blur(50px)" }}
+    variants={travelNormal}
+    custom={direction}
+    initial="enter"
+    animate="center"
+    exit="exit"
     className="w-full"
   >
     <MobileScrollWrapper accentColor="#3b82f6" maxHeight="75vh">
@@ -60,11 +65,13 @@ export const StorytellingCards = ({ contentStep }: StepProps) => (
   </motion.div>
 );
 
-export const StorytellingBridge = () => (
+export const StorytellingBridge = ({ direction }: TravelProps) => (
   <motion.div
-    initial={{ opacity: 0, scale: 1.5, filter: "blur(30px)" }}
-    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-    exit={{ opacity: 0, scale: 0, filter: "blur(50px)" }}
+    variants={travelPunch}
+    custom={direction}
+    initial="enter"
+    animate="center"
+    exit="exit"
     className="flex flex-col items-center absolute w-full px-6"
   >
     <Rocket className="w-8 h-8 md:w-12 md:h-12 text-blue-400 mb-6 md:mb-8 animate-bounce" />

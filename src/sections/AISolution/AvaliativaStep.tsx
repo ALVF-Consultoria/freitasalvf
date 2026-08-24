@@ -4,17 +4,19 @@ import { motion } from "framer-motion";
 import { MessageSquareQuote } from "lucide-react";
 import { MobileScrollWrapper } from "@/components/blockchain/MobileScrollWrapper";
 import { naiaAvaliativaFeatures } from "./features";
+import { travelNormal, travelPunch, type TravelProps } from "./travel";
 
-interface StepProps {
+interface StepProps extends TravelProps {
   contentStep: number;
 }
 
-export const AvaliativaIntro = ({ contentStep }: StepProps) => (
+export const AvaliativaIntro = ({ contentStep, direction }: StepProps) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.5, rotateY: 20, filter: "blur(20px)" }}
-    animate={{ opacity: 1, scale: 1, rotateY: 0, filter: "blur(0px)" }}
-    exit={{ opacity: 0, scale: 1.5, rotateY: -20, filter: "blur(30px)" }}
-    transition={{ duration: 0.8, ease: "easeOut" }}
+    variants={travelNormal}
+    custom={direction}
+    initial="enter"
+    animate="center"
+    exit="exit"
     className="flex flex-col items-center absolute w-full px-4"
   >
     <MobileScrollWrapper accentColor="#22d3ee">
@@ -35,11 +37,13 @@ export const AvaliativaIntro = ({ contentStep }: StepProps) => (
   </motion.div>
 );
 
-export const AvaliativaCards = ({ contentStep }: StepProps) => (
+export const AvaliativaCards = ({ contentStep, direction }: StepProps) => (
   <motion.div
-    initial={{ opacity: 0, rotateX: 10 }}
-    animate={{ opacity: 1, rotateX: 0 }}
-    exit={{ opacity: 0, scale: 2, filter: "blur(40px)" }}
+    variants={travelNormal}
+    custom={direction}
+    initial="enter"
+    animate="center"
+    exit="exit"
     className="w-full"
   >
     <MobileScrollWrapper accentColor="#22d3ee" maxHeight="75vh">
@@ -61,11 +65,13 @@ export const AvaliativaCards = ({ contentStep }: StepProps) => (
   </motion.div>
 );
 
-export const AvaliativaBridge = () => (
+export const AvaliativaBridge = ({ direction }: TravelProps) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.2, filter: "blur(30px)" }}
-    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-    exit={{ opacity: 0, scale: 4, filter: "blur(50px)" }}
+    variants={travelPunch}
+    custom={direction}
+    initial="enter"
+    animate="center"
+    exit="exit"
     className="flex flex-col items-center absolute w-full px-6"
   >
     <MessageSquareQuote className="w-8 h-8 md:w-12 md:h-12 text-cyan-400 mb-6 md:mb-8 opacity-50" />

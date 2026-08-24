@@ -60,6 +60,15 @@ both read as key `""` — it sees no change and skips the exit animation entirel
 `{step === 1 && <IntroQuote key="intro-quote" />}`. Copy the AISolution form when
 migrating.
 
+`AISolution/travel.ts` is the section's shared Z-travel grammar: every block enters and
+exits along the camera axis instead of sliding, so forward always reads as flying *through*
+the content. `makeTravel({ near, far, blur })` returns `enter`/`center`/`exit` variants that
+read framer-motion's `custom` to invert on backward scroll — so the orchestrator must pass
+`custom={direction}` on both the `AnimatePresence` and each child. `travelNormal`,
+`travelSoft`, `travelFlat` and `travelPunch` are the four presets in use. Passing `blur: 0`
+omits the `filter` property entirely rather than setting `blur(0px)`, which would still
+force the subtree to rasterize at rest.
+
 `useStepNavigation` deliberately walks up the DOM (`isAtScrollBoundary`) and refuses to advance while the event target sits inside a scrollable element that hasn't hit its top/bottom. This is what makes mobile work: content too tall for a phone gets wrapped in `MobileScrollWrapper`, which becomes an internal scroller below 768px and a passthrough above it. It lives in `src/components/blockchain/` for historical reasons but is used by most sections — don't assume that directory is blockchain-only.
 
 `useMobile()` (768px breakpoint) is the standard branch for layout, animation intensity, and disabling desktop-only effects (Hero's spotlight mask, `ScrollIndicator`).
@@ -96,8 +105,15 @@ widening back.
 
 `ParticlesBackground` is **not** three.js despite the name — it is 100 (30 on mobile)
 absolutely-positioned `<div>`s animated with framer-motion, in three parallax layers driven
-by a spring on the mouse. Its container is `z-20`, so it floats above section content
-(`z-10`), not behind it.
+by a spring on the mouse. Its own container carries `z-20`, but every section wraps it in
+an element that opens a stacking context (`opacity-40`, `opacity-30`, `z-0`), so that
+`z-20` only orders inside the wrapper and the layer always sits behind content.
+
+Its visibility is the product of two opacities: the wrapper's, and the `opacity: 0.2` each
+particle animates to. The AI section used `opacity-20`, giving 0.2 × 0.2 = 0.04 — a
+cyan-400 dot at 4% over `#050505` renders as `rgb(6, 13, 14)` against `rgb(5, 5, 5)`, which
+is invisible, so it was dropped there. Anything below roughly `opacity-30` on the wrapper is
+not worth mounting.
 
 Video, audio, and images are static files in `public/`, referenced by absolute path. `VideoBackground` forwards a ref so `Dashboard` can drive `onTimeUpdate`. `YoutubeBackground` injects the YouTube IFrame API at runtime for looped background clips.
 
@@ -116,4 +132,7 @@ Video, audio, and images are static files in `public/`, referenced by absolute p
   out while a different treatment is chosen. It is the only thing importing `ogl`, and
   tree-shaking keeps both out of the bundle while it stays unmounted. Delete both together
   if the idea is dropped for good.
+- `src/components/DepthField.tsx` + `.css` are parked the same way — tiled parallax dot
+  layers built as the continuous background for the AI section's 21 content steps, then
+  unmounted. Those steps currently have only the radial ambient light behind them.
 - Unused scaffolding that nothing imports: `src/components/ui/{Button,Card}.tsx`, `src/components/common/{Container,Footer}.tsx`, `src/components/NeuralLink3D.tsx`, `src/components/blockchain/BinaryRain.tsx`, and `src/lib/gsap.ts` (GSAP + ScrollTrigger are installed and registered but no component uses them). Prefer the framer-motion patterns already in the sections over reviving these.

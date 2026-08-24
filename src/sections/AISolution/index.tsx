@@ -5,13 +5,13 @@ import { useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useStepNavigation } from "@/hooks/useStepNavigation";
 import { useMobile } from "@/hooks/useMobile";
-import { ParticlesBackground } from "@/components/ParticlesBackground";
 import { Antigravity } from "@/components/Antigravity";
 import { ScrollIndicator } from "@/components/common/ScrollIndicator";
 import { IntroQuote, IntroBrand } from "./IntroSteps";
 import { AvaliativaIntro, AvaliativaCards, AvaliativaBridge } from "./AvaliativaStep";
 import { StorytellingIntro, StorytellingCards, StorytellingBridge } from "./StorytellingStep";
 import { BusinessIntro, BusinessCards, BusinessClose } from "./BusinessStep";
+import { SaibaMaisStep } from "./SaibaMaisStep";
 
 interface AISolutionProps {
   onBack: () => void;
@@ -23,34 +23,43 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
   // propria secao. contentStep preserva a numeracao original dos blocos (1..21),
   // para as guardas abaixo nao precisarem ser deslocadas.
   const INTRO_STEPS = 2;
-  const CONTENT_STEPS = 21;
+  const CONTENT_STEPS = 22;
 
   const sectionRef = useRef<HTMLElement>(null);
   const [step, setStep] = useState(1);
+  // +1 descendo, -1 subindo. E o que faz a viagem se inverter ao voltar, em vez
+  // de repetir a animacao de ida.
+  const [direction, setDirection] = useState(1);
   const totalSteps = INTRO_STEPS + CONTENT_STEPS;
   const contentStep = step - INTRO_STEPS;
   const isIntro = step <= INTRO_STEPS;
 
   useStepNavigation({
     onNext: () => {
-      if (step < totalSteps) setStep((prev) => prev + 1);
-      else onBack();
+      if (step < totalSteps) {
+        setDirection(1);
+        setStep((prev) => prev + 1);
+      } else onBack();
     },
     // Simetrico ao onNext: passar do ultimo passo sai da secao, e subir antes do
     // primeiro tambem — volta para a home em vez de travar no topo.
     onPrev: () => {
-      if (step > 1) setStep((prev) => prev - 1);
-      else onBack();
+      if (step > 1) {
+        setDirection(-1);
+        setStep((prev) => prev - 1);
+      } else onBack();
     },
     cooldown: isIntro ? 1500 : 700,
   });
 
   return (
     <section ref={sectionRef} className={`relative min-h-screen w-full bg-[#050505] flex flex-col items-center justify-center overflow-hidden font-sans text-center ${isMobile ? 'p-6 pt-20' : 'py-20 px-6'}`}>
-      {/* Antigravity: so na tela de abertura. AnimatePresence proprio para sair em
-          fade junto com a citacao, em vez de sumir de um frame para o outro. */}
+      {/* Antigravity nas duas telas de abertura. Como a key nao muda entre elas, o
+          canvas nao remonta na passagem do 1 para o 2: o contexto WebGL sobrevive,
+          as particulas nao sao resemeadas e o campo fica continuo por tras da
+          troca de conteudo. Sai em fade so ao entrar no conteudo numerado. */}
       <AnimatePresence>
-        {step === 1 && (
+        {isIntro && (
           <motion.div
             key="antigravity-bg"
             initial={{ opacity: 0 }}
@@ -83,17 +92,12 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
         )}
       </AnimatePresence>
 
-      {/* Background Decor */}
-      <div className="absolute inset-0 pointer-events-none opacity-20">
-        <ParticlesBackground />
-      </div>
-
       {/* Dynamic Ambient Lights */}
       <motion.div
         animate={{
           backgroundColor:
             contentStep <= 7 ? "rgba(8, 145, 178, 0.08)" :
-            contentStep <= 16 ? "rgba(37, 99, 235, 0.08)" :
+            contentStep <= 14 ? "rgba(37, 99, 235, 0.08)" :
             "rgba(16, 185, 129, 0.08)"
         }}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] blur-[180px] rounded-full pointer-events-none transition-colors duration-1000"
@@ -123,25 +127,30 @@ export const AISolution = ({ onBack }: AISolutionProps) => {
 
         {/* As keys ficam aqui, no filho direto do AnimatePresence: e delas que ele
             depende para saber que a tela mudou e rodar a animacao de saida. */}
-        <AnimatePresence mode="wait">
+        {/* custom precisa estar nos dois lugares: no AnimatePresence ele alimenta
+            a variante do bloco que esta SAINDO, no filho a do que esta ENTRANDO. */}
+        <AnimatePresence mode="wait" custom={direction}>
           {/* === APRESENTACAO (steps 1-2) — herdado do antigo AITransition === */}
-          {step === 1 && <IntroQuote key="intro-quote" />}
-          {step === 2 && <IntroBrand key="intro-brand" />}
+          {step === 1 && <IntroQuote key="intro-quote" direction={direction} />}
+          {step === 2 && <IntroBrand key="intro-brand" direction={direction} />}
 
           {/* === AVALIATIVA (1-7) === */}
-          {(contentStep === 1 || contentStep === 2) && <AvaliativaIntro key="aval-intro" contentStep={contentStep} />}
-          {(contentStep >= 3 && contentStep <= 6) && <AvaliativaCards key="aval-cards" contentStep={contentStep} />}
-          {contentStep === 7 && <AvaliativaBridge key="bridge-1" />}
+          {(contentStep === 1 || contentStep === 2) && <AvaliativaIntro key="aval-intro" contentStep={contentStep} direction={direction} />}
+          {(contentStep >= 3 && contentStep <= 6) && <AvaliativaCards key="aval-cards" contentStep={contentStep} direction={direction} />}
+          {contentStep === 7 && <AvaliativaBridge key="bridge-1" direction={direction} />}
 
           {/* === STORYTELLING (8-14) === */}
-          {(contentStep === 8 || contentStep === 9) && <StorytellingIntro key="story-intro" contentStep={contentStep} />}
-          {(contentStep >= 10 && contentStep <= 13) && <StorytellingCards key="story-cards" contentStep={contentStep} />}
-          {contentStep === 14 && <StorytellingBridge key="bridge-2" />}
+          {(contentStep === 8 || contentStep === 9) && <StorytellingIntro key="story-intro" contentStep={contentStep} direction={direction} />}
+          {(contentStep >= 10 && contentStep <= 13) && <StorytellingCards key="story-cards" contentStep={contentStep} direction={direction} />}
+          {contentStep === 14 && <StorytellingBridge key="bridge-2" direction={direction} />}
 
           {/* === BUSINESS AUTOMATION (15-21) === */}
-          {(contentStep === 15 || contentStep === 16) && <BusinessIntro key="biz-intro" contentStep={contentStep} />}
-          {(contentStep >= 17 && contentStep <= 20) && <BusinessCards key="biz-cards" contentStep={contentStep} />}
-          {contentStep === 21 && <BusinessClose key="final-close" />}
+          {(contentStep === 15 || contentStep === 16) && <BusinessIntro key="biz-intro" contentStep={contentStep} direction={direction} />}
+          {(contentStep >= 17 && contentStep <= 20) && <BusinessCards key="biz-cards" contentStep={contentStep} direction={direction} />}
+          {contentStep === 21 && <BusinessClose key="final-close" direction={direction} />}
+
+          {/* === FECHAMENTO (22) === */}
+          {contentStep === 22 && <SaibaMaisStep key="saiba-mais" direction={direction} />}
         </AnimatePresence>
 
         {(contentStep === 1 && !isMobile) && <ScrollIndicator />}

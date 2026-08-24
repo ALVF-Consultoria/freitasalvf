@@ -2,16 +2,18 @@
 
 import { motion } from "framer-motion";
 import { DepthText } from "@/components/DepthText";
+import { travelNormal, travelSoft, type TravelProps } from "./travel";
 
 // Telas de conceito herdadas do antigo AITransition. Abrem a secao antes do
 // conteudo numerado comecar.
 
-export const IntroQuote = () => (
+export const IntroQuote = ({ direction }: TravelProps) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.5, filter: "blur(20px)" }}
-    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-    exit={{ opacity: 0, scale: 1.5, filter: "blur(30px)" }}
-    transition={{ duration: 1.5, ease: "easeOut" }}
+    variants={travelNormal}
+    custom={direction}
+    initial="enter"
+    animate="center"
+    exit="exit"
     className="flex flex-col items-center absolute w-full max-w-4xl px-4"
   >
     <h2 className="text-2xl md:text-4xl font-light text-white leading-relaxed tracking-tight italic">
@@ -20,19 +22,15 @@ export const IntroQuote = () => (
   </motion.div>
 );
 
-export const IntroBrand = () => (
+export const IntroBrand = ({ direction }: TravelProps) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.8, y: 30 }}
-    animate={{ opacity: 1, scale: 1, y: 0 }}
-    exit={{ opacity: 0, scale: 1.2, filter: "blur(20px)" }}
-    transition={{ duration: 1, ease: "easeOut" }}
+    variants={travelSoft}
+    custom={direction}
+    initial="enter"
+    animate="center"
+    exit="exit"
     className="flex flex-col items-center absolute w-full px-4 text-center"
   >
-    {/* O h3 fica so como semantica: tamanho, peso e sombra vem das variaveis CSS
-        do DepthText. Tirei o drop-shadow que estava aqui de proposito — um filter
-        no ancestral forca rerrasterizar as 35 camadas de texto a cada frame, e o
-        stage gira em requestAnimationFrame. O halo agora e o shadow do proprio
-        componente, tirado do depthColor. */}
     <h3 className="leading-none">
       <DepthText
         segments={[{ text: "NA" }, { text: "IA", color: "#22d3ee" }]}

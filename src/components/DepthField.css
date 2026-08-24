@@ -1,0 +1,51 @@
+.depth-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* A cor vive aqui e as camadas a leem com currentColor. Custom properties nao
+     fazem transition, mas `color` faz — e assim a virada de capitulo desliza em
+     vez de pular. */
+  transition: color 1.2s ease;
+}
+
+.depth-field__layer {
+  position: absolute;
+  /* Precisa ser maior que a viewport para nao abrir vao no menor scale do ciclo:
+     190% de largura a scale 0.7 ainda cobre 133% da tela. */
+  inset: -45%;
+  background-image: radial-gradient(circle, currentColor var(--df-dot), transparent var(--df-dot));
+  background-size: var(--df-tile) var(--df-tile);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: depth-field-rush var(--df-duration) linear infinite;
+  animation-delay: var(--df-delay);
+}
+
+/* Um ciclo = uma camada nascendo longe, cruzando e saindo do campo de visao.
+   Escala e opacidade so — as duas propriedades que o compositor resolve sem
+   repintar. */
+@keyframes depth-field-rush {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  16% {
+    opacity: var(--df-peak);
+  }
+  70% {
+    opacity: var(--df-peak);
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .depth-field__layer {
+    animation: none;
+    transform: none;
+    opacity: var(--df-peak);
+  }
+}
