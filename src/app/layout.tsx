@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
+import { BackgroundMusic } from "@/components/common/BackgroundMusic";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -33,6 +34,10 @@ export default function RootLayout({
         className={`${inter.variable} ${outfit.variable} font-sans antialiased`}
       >
         {children}
+        {/* Fica no layout, nao na page: o layout raiz e o unico no que
+            sobrevive ao router.push entre / e /solucoes-ia. Dentro da page
+            o <audio> era desmontado na troca de rota e a musica parava. */}
+        <BackgroundMusic />
       </body>
     </html>
   );

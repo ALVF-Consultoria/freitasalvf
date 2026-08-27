@@ -8,7 +8,7 @@ import { useStepNavigation } from "../hooks/useStepNavigation";
 import { ParticlesBackground } from "../components/ParticlesBackground";
 import { ScrollIndicator } from "../components/common/ScrollIndicator";
 import { useMobile } from "@/hooks/useMobile";
-import { MobileScrollWrapper } from "../components/blockchain/MobileScrollWrapper";
+import { MobileScrollWrapper } from "../components/common/MobileScrollWrapper";
 
 interface HeritageSolutionProps {
   onBack: () => void;

@@ -1,7 +1,8 @@
 import type { Variants } from "framer-motion";
 
 /**
- * Gramatica unica de movimento da secao: a camera avanca sempre no mesmo sentido.
+ * Gramatica de movimento compartilhada entre as secoes que navegam por passos
+ * (AISolution, BlockchainSolution): a camera avanca sempre no mesmo sentido.
  * Descendo, a tela nasce pequena e distante, chega ao lugar e depois cresce ate
  * atravessar a camera. Subindo, o mesmo caminho ao contrario — sem isso, voltar
  * repete a animacao de descer e a ilusao de percurso quebra.
@@ -54,8 +55,11 @@ export const travelNormal = makeTravel({ near: 1.9, far: 0.55 });
 /** Abertura e o NAIA: mais contido, e sem blur por causa da pilha do DepthText. */
 export const travelSoft = makeTravel({ near: 1.45, far: 0.62, blur: 0 });
 
-/** Mesma amplitude do normal, sem filter. Para blocos com canvas ou pilha 3D
- *  animando por frame, onde um filter no ancestral forca rerrasterizar tudo. */
+/** Mesma amplitude do normal, sem filter. Dois casos pedem este preset:
+ *  blocos com canvas ou pilha 3D animando por frame, onde um filter no ancestral
+ *  forca rerrasterizar tudo; e blocos cujos filhos usam backdrop-filter, que
+ *  precisa se resolver de novo contra o contexto criado pelo filter — a cada
+ *  valor de escala da transicao. */
 export const travelFlat = makeTravel({ near: 1.9, far: 0.55, blur: 0 });
 
 /** As pontes entre areas. Sao a pontuacao do percurso — atravessam a camera. */

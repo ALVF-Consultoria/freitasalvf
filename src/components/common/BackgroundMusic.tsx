@@ -9,18 +9,25 @@ export const BackgroundMusic = () => {
   const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
+    if (isPlaying) return;
+
     const handleFirstInteraction = () => {
-      if (audioRef.current && !isPlaying) {
-        audioRef.current.play().then(() => {
-          setIsPlaying(true);
-        }).catch(err => {
-          console.log("Autoplay blocked, waiting for interaction:", err);
-        });
-      }
+      audioRef.current?.play().then(() => {
+        setIsPlaying(true);
+      }).catch(err => {
+        console.log("Autoplay blocked, waiting for interaction:", err);
+      });
     };
 
-    window.addEventListener("click", handleFirstInteraction);
-    return () => window.removeEventListener("click", handleFirstInteraction);
+    // Nem todo caminho comeca num clique: em /solucoes-ia o usuario avanca no
+    // scroll. "wheel" nao conta como gesto de ativacao para o autoplay, mas
+    // pointerdown/touchend/keydown contam — entao a musica pega em qualquer
+    // entrada, inclusive quem abre a rota direto pela URL.
+    const events = ["click", "pointerdown", "touchend", "keydown"] as const;
+    events.forEach((e) => window.addEventListener(e, handleFirstInteraction));
+    return () => {
+      events.forEach((e) => window.removeEventListener(e, handleFirstInteraction));
+    };
   }, [isPlaying]);
 
   const toggleMute = (e: React.MouseEvent) => {

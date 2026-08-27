@@ -8,7 +8,7 @@ import { ArrowLeft, Cpu, Bot, Mic, Link as LinkIcon, LineChart, Wifi, Graduation
 import { ParticlesBackground } from "../components/ParticlesBackground";
 import { ScrollIndicator } from "../components/common/ScrollIndicator";
 import { useMobile } from "@/hooks/useMobile";
-import { MobileScrollWrapper } from "../components/blockchain/MobileScrollWrapper";
+import { MobileScrollWrapper } from "../components/common/MobileScrollWrapper";
 
 interface EducationSolutionProps {
   onBack: () => void;

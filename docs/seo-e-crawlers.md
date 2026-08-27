@@ -47,7 +47,10 @@ Duas portas fechadas, não uma:
    de `!isAppLoading`. O prerender do build captura apenas o `LoadingCurtain`.
 
 2. **Estado de navegação.** Mesmo após a cortina, `activeSection` renderiza uma seção por vez.
-   Blockchain, Heritage, B2B, Educação, Metaverso e Storytelling só entram no DOM após clique.
+   Heritage, B2B, Educação, Metaverso e Storytelling só entram no DOM após clique.
+   Blockchain saiu dessa lista: virou a rota `/blockchain`, com `<title>` e `description`
+   próprios no HTML — o mesmo que já valia para `/solucoes-ia`. O corpo da página ainda
+   depende de JS, mas a identidade da área agora existe estática.
    Crawler não clica.
 
 Consequência: todo o texto real do site vive em `src/constants/*.ts` e nunca chega ao HTML.

@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ParticleText } from "@/components/ParticleText";
 import { Magnet } from "@/components/Magnet";
-import { travelFlat, type TravelProps } from "./travel";
+import { travelFlat, type TravelProps } from "@/lib/travel";
 
 /**
  * Passo final da secao. O ParticleText desenha num canvas proprio e roda um

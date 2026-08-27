@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import { TrendingUp } from "lucide-react";
-import { MobileScrollWrapper } from "@/components/blockchain/MobileScrollWrapper";
+import { MobileScrollWrapper } from "@/components/common/MobileScrollWrapper";
 import { naiaBusinessFeatures } from "./features";
-import { travelNormal, type TravelProps } from "./travel";
+import { travelNormal, type TravelProps } from "@/lib/travel";
 
 interface StepProps extends TravelProps {
   contentStep: number;

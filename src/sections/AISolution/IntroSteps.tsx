@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { DepthText } from "@/components/DepthText";
-import { travelNormal, travelSoft, type TravelProps } from "./travel";
+import { travelNormal, travelSoft, type TravelProps } from "@/lib/travel";
 
 // Telas de conceito herdadas do antigo AITransition. Abrem a secao antes do
 // conteudo numerado comecar.

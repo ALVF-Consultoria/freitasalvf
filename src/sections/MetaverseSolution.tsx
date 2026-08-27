@@ -3,13 +3,13 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useStepNavigation } from "../hooks/useStepNavigation";
-import { DeepSpace } from "@/components/blockchain/DeepSpace";
+import { DeepSpace } from "@/components/DeepSpace";
 import { YoutubeBackground } from "@/components/common/YoutubeBackground";
 import { metaverseChapters } from "../constants/metaverseData";
 import { ArrowLeft } from "lucide-react";
 import { ScrollIndicator } from "../components/common/ScrollIndicator";
 import { useMobile } from "@/hooks/useMobile";
-import { MobileScrollWrapper } from "../components/blockchain/MobileScrollWrapper";
+import { MobileScrollWrapper } from "../components/common/MobileScrollWrapper";
 
 interface MetaverseSolutionProps {
   onBack: () => void;

@@ -3,13 +3,13 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useStepNavigation } from "../hooks/useStepNavigation";
-import { DeepSpace } from "@/components/blockchain/DeepSpace";
+import { DeepSpace } from "@/components/DeepSpace";
 import { YoutubeBackground } from "@/components/common/YoutubeBackground";
 import { storytellingLogs } from "../constants/storytellingData";
 import { ArrowLeft, ArrowUpRight, Youtube, Compass } from "lucide-react";
 import { ScrollIndicator } from "../components/common/ScrollIndicator";
 import { useMobile } from "@/hooks/useMobile";
-import { MobileScrollWrapper } from "../components/blockchain/MobileScrollWrapper";
+import { MobileScrollWrapper } from "../components/common/MobileScrollWrapper";
 
 interface StorytellingSolutionProps {
   onBack: () => void;

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Hero } from "@/sections/Hero";
 import { Dashboard } from "@/sections/Dashboard";
-import { BlockchainTransition } from "@/components/BlockchainTransition";
 import { MetaverseTransition } from "@/components/MetaverseTransition";
 import { StorytellingSolution } from "@/sections/StorytellingSolution";
 import { StorytellingTransition } from "@/components/StorytellingTransition";
@@ -13,18 +12,15 @@ import { B2BTransition } from "@/components/B2BTransition";
 import { B2BSolution } from "@/sections/B2BSolution";
 import { EducationTransition } from "@/components/EducationTransition";
 import { EducationSolution } from "@/sections/EducationSolution";
-import { BlockchainSolution } from "@/sections/BlockchainSolution";
 import { MetaverseSolution } from "@/sections/MetaverseSolution";
 import { HeritageTransition } from "@/components/HeritageTransition";
 import { HeritageSolution } from "@/sections/HeritageSolution";
 import { DashboardToNaia } from "@/sections/DashboardToNaia";
 import { ConcessionariaSolution } from "@/sections/ConcessionariaSolution";
-import { BackgroundMusic } from "@/components/common/BackgroundMusic";
 import { LoadingCurtain } from "@/components/common/LoadingCurtain";
 
 type Section =
   | "hero" | "dashboard"
-  | "blockchain-transition" | "blockchain-solution"
   | "metaverse-transition" | "metaverse-solution"
   | "storytelling-transition" | "storytelling-solution"
   | "b2b-transition" | "b2b-solution"
@@ -97,7 +93,7 @@ export default function Home() {
           >
             <Dashboard
               onNavigateToAI={() => router.push("/solucoes-ia")}
-              onNavigateToBlockchain={() => setNavigatedSection("blockchain-transition")}
+              onNavigateToBlockchain={() => router.push("/blockchain")}
               onNavigateToMetaverse={() => setNavigatedSection("metaverse-transition")}
               onNavigateToStorytelling={() => setNavigatedSection("storytelling-transition")}
               onNavigateToB2B={() => setNavigatedSection("b2b-transition")}
@@ -105,30 +101,6 @@ export default function Home() {
               onNavigateToHeritage={() => setNavigatedSection("heritage-transition")}
               onNavigateToConcessionaria={() => setNavigatedSection("concessionaria")}
             />
-          </motion.div>
-        )}
-
-        {section === "blockchain-transition" && (
-          <motion.div
-            key="blockchain-transition-screen"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <BlockchainTransition onComplete={() => setNavigatedSection("blockchain-solution")} />
-          </motion.div>
-        )}
-
-        {section === "blockchain-solution" && (
-          <motion.div
-            key="blockchain-solution-section"
-            initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <BlockchainSolution onBack={() => setNavigatedSection("dashboard")} />
           </motion.div>
         )}
 
@@ -277,7 +249,6 @@ export default function Home() {
         )}
       </AnimatePresence>
       )}
-      <BackgroundMusic />
     </main>
   );
 }

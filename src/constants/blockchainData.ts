@@ -111,9 +111,9 @@ export const solanaImmersionData = {
   ],
   ecosystem: [
     { name: "JUPITER", role: "Liquidez Agregada" },
-    { name: "HELIUM", label: "DePIN Infrastructure" },
-    { name: "HÉLIUS", role: "RPC/Developer Tools" },
-    { name: "JITO", label: "MEV Optimization" }
+    { name: "HELIUM", role: "DePIN Infrastructure" },
+    { name: "HELIUS", role: "RPC/Developer Tools" },
+    { name: "JITO", role: "MEV Optimization" }
   ]
 };
 
