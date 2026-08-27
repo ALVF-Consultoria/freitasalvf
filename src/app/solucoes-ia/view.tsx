@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { markEntered } from "@/lib/entry";
 import { AISolution } from "@/sections/AISolution";
 
 export function SolucoesIAView() {
@@ -15,9 +16,17 @@ export function SolucoesIAView() {
   // faz o zoom primeiro e so depois chama a navegacao.
   const handleBack = () => setLeaving(true);
 
+  // Marcar antes do push, nao depois: a home decide entre hero e dashboard ja na
+  // primeira renderizacao. Sem isso, quem abriu /solucoes-ia direto pela URL
+  // voltava para o hero, porque a flag so era escrita por um efeito de /.
+  const leaveToHub = () => {
+    markEntered();
+    router.push("/");
+  };
+
   return (
     <main className="min-h-screen bg-[#050505] overflow-hidden">
-      <AnimatePresence onExitComplete={() => router.push("/")}>
+      <AnimatePresence onExitComplete={() => leaveToHub()}>
         {!leaving && (
           <motion.div
             key="ai-solution-route"

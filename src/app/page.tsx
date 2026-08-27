@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { markEntered, hasEnteredDocument } from "@/lib/entry";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Hero } from "@/sections/Hero";
@@ -31,11 +32,6 @@ type Section =
   // agora abre a propria tela. Religar e so apontar algum onNavigate para ca.
   | "dashboard-naia";
 
-// Modulo, nao sessionStorage: um router.push entre rotas nao recarrega o
-// documento, entao esta variavel sobrevive a ida e volta para /solucoes-ia e
-// zera num F5 — que e exatamente a diferenca entre "voltei de uma rota" e
-// "abri a pagina de novo". Com sessionStorage o hero sumia ate fechar a aba.
-let hasEnteredDocument = false;
 const noopSubscribe = () => () => {};
 
 export default function Home() {
@@ -45,11 +41,7 @@ export default function Home() {
   // dashboard, o retorno cairia no hero e obrigaria a rever o video de abertura.
   // useSyncExternalStore em vez de setState num efeito: o snapshot do servidor e
   // false e o do cliente le a variavel de modulo, entao a hidratacao nao quebra.
-  const hasEntered = useSyncExternalStore(
-    noopSubscribe,
-    () => hasEnteredDocument,
-    () => false
-  );
+  const hasEntered = useSyncExternalStore(noopSubscribe, hasEnteredDocument, () => false);
 
   const [isAppLoading, setIsAppLoading] = useState(true);
   const [navigatedSection, setNavigatedSection] = useState<Section | null>(null);
@@ -58,7 +50,7 @@ export default function Home() {
   const showCurtain = isAppLoading && !hasEntered;
 
   useEffect(() => {
-    if (section !== "hero") hasEnteredDocument = true;
+    if (section !== "hero") markEntered();
   }, [section]);
 
   return (

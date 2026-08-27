@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { markEntered } from "@/lib/entry";
 import { BlockchainTransition } from "./BlockchainTransition";
 import { BlockchainSolution } from "@/sections/BlockchainSolution";
 
@@ -20,9 +21,17 @@ export function BlockchainView() {
   // no onExitComplete — mesmo padrao de /solucoes-ia.
   const handleBack = () => setStage("leaving");
 
+  // Marcar antes do push, nao depois: a home decide entre hero e dashboard ja na
+  // primeira renderizacao. Sem isso, quem abriu /blockchain direto pela URL
+  // voltava para o hero, porque a flag so era escrita por um efeito de /.
+  const leaveToHub = () => {
+    markEntered();
+    router.push("/");
+  };
+
   return (
     <main className="min-h-screen bg-[#050505] overflow-hidden">
-      <AnimatePresence onExitComplete={() => stage === "leaving" && router.push("/")}>
+      <AnimatePresence onExitComplete={() => stage === "leaving" && leaveToHub()}>
         {stage === "transition" && (
           <motion.div
             key="blockchain-transition"
