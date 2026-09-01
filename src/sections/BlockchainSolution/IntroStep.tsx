@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useMobile } from "@/hooks/useMobile";
 import { MobileScrollWrapper } from "@/components/common/MobileScrollWrapper";
 import { travelSoft, type TravelProps } from "@/lib/travel";
+import { bcType } from "./typography";
 
 interface IntroStepProps extends TravelProps {
   step: number;
@@ -45,7 +46,7 @@ export const IntroStep = ({ step, direction }: IntroStepProps) => {
             transition={glide}
             className="md:max-w-md lg:max-w-lg shrink-0 text-left"
           >
-            <h2 className="text-4xl md:text-4xl lg:text-5xl text-white uppercase tracking-tighter leading-[0.85]">
+            <h2 className={`${bcType.title} text-white uppercase`}>
               <span className="text-amber-500">o presente é</span>
               <span className="block">descentralizado</span>
             </h2>
@@ -56,7 +57,7 @@ export const IntroStep = ({ step, direction }: IntroStepProps) => {
             transition={glide}
             className="md:max-w-sm lg:max-w-md shrink-0 md:text-right md:mt-12 lg:mt-14"
           >
-            <p className="text-2xl md:text-3xl lg:text-4xl text-white/80 font-light tracking-tight leading-[1.05]">
+            <p className={`${bcType.lede} text-white/80 font-light`}>
               A economia programável não é o futuro, é a{" "}
               <span className="text-amber-500">infraestrutura do agora</span>.
             </p>

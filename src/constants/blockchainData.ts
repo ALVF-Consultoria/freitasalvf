@@ -24,6 +24,24 @@ export const blockchainFeatures = [
   }
 ];
 
+/**
+ * Os quatro posteres da Constellation, na ordem em que voam. O percurso termina
+ * na Solana de proposito: e ela que a secao aprofunda nos passos 12-14, entao o
+ * ultimo poster fica parado de frente como a entrega da tela.
+ *
+ * `name` casa com o `name` de ecosystemPlatforms — e por ele que a legenda
+ * recupera cor, missao e link de cada plataforma, sem duplicar o dado aqui.
+ *
+ * Os arquivos sao versoes de 800px: as artes originais vieram em 2048x2048 e
+ * ~2,7 MB cada, e o poster nunca passa de 720px reais (360 CSS x dpr 2).
+ */
+export const constellationPosters = [
+  { name: "Polygon", src: "/images/blockchian/node-polygon.jpg" },
+  { name: "Arbitrum", src: "/images/blockchian/node-arbitrum.jpg" },
+  { name: "ChainLink", src: "/images/blockchian/node-chainlink.jpg" },
+  { name: "Solana", src: "/images/blockchian/node-solana.jpg" },
+];
+
 export const ecosystemPlatforms = [
   {
     name: "Solana",

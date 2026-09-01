@@ -6,9 +6,12 @@ import { solanaImmersionData } from "@/constants/blockchainData";
 import { useMobile } from "@/hooks/useMobile";
 import { MobileScrollWrapper } from "@/components/common/MobileScrollWrapper";
 import { travelFlat, type TravelProps } from "@/lib/travel";
+import { bcType } from "./typography";
 
-// Os tres passos da imersao Solana. O fundo (grid roxo, diagonal e HUD flutuante)
-// nao esta aqui: mora no orquestrador, para nao remontar a cada troca de passo.
+// Os tres passos da imersao Solana. Nenhum deles traz fundo proprio: o grid roxo
+// e a diagonal que moravam no orquestrador sairam quando o holograma passou a
+// cobrir a secao inteira. A identidade da Solana aqui vem da cor nos elementos
+// (#9945FF / #14F195) e do radial roxo da luz ambiente, nao de um segundo campo.
 
 export const SolanaIntro = ({ direction }: TravelProps) => (
   <motion.div
@@ -27,15 +30,15 @@ export const SolanaIntro = ({ direction }: TravelProps) => (
           className="flex items-center gap-3 md:gap-4 py-1.5 md:py-2 px-4 md:px-6 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl"
         >
           <div className="w-1.5 md:w-2 h-1.5 md:h-2 rounded-full bg-[#14F195] animate-pulse" />
-          <span className="text-[8px] md:text-[10px] font-mono uppercase tracking-[0.3em] text-white/50">Next-Gen Infrastructure</span>
+          <span className={`${bcType.micro} font-mono text-white/50`}>Next-Gen Infrastructure</span>
         </motion.div>
 
         <div className="relative">
-          <h2 className="text-5xl md:text-9xl font-black italic tracking-tighter text-white uppercase leading-none">SOLANA</h2>
+          <h2 className={`${bcType.display} font-black italic text-white uppercase`}>SOLANA</h2>
           <div className="absolute -bottom-2 md:-bottom-4 left-0 w-full h-0.5 md:h-1 bg-linear-to-r from-[#9945FF] to-[#14F195] shadow-[0_0_20px_rgba(153,69,255,0.5)]" />
         </div>
 
-        <p className="max-w-md md:max-w-xl text-white/40 uppercase tracking-[0.2em] text-[10px] md:text-sm font-medium">
+        <p className={`${bcType.label} max-w-md md:max-w-xl text-white/40 font-medium`}>
           A arquitetura que escalou para as massas. Desempenho de hardware, segurança de blockchain.
         </p>
       </div>
@@ -64,10 +67,10 @@ export const SolanaDeepDive = ({ direction }: TravelProps) => (
               transition={{ delay: i * 0.1 }}
               className="p-4 md:p-8 border border-white/5 bg-white/2 backdrop-blur-3xl rounded-2xl group hover:border-[#9945FF]/30 transition-all shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]"
             >
-              <span className="text-[10px] font-mono text-white/30 uppercase tracking-[0.4em] mb-1 md:mb-2 block">{m.label}</span>
+              <span className={`${bcType.micro} font-mono text-white/30 mb-1 md:mb-2 block`}>{m.label}</span>
               <div className="flex items-baseline gap-2 md:gap-3">
-                <span className="text-2xl md:text-4xl font-black text-white italic tracking-tighter">{m.value}</span>
-                <span className="text-[8px] md:text-[10px] font-bold text-[#14F195] uppercase tracking-widest">{m.detail}</span>
+                <span className={`${bcType.title} font-black text-white italic`}>{m.value}</span>
+                <span className={`${bcType.micro} font-bold text-[#14F195]`}>{m.detail}</span>
               </div>
             </motion.div>
           ))}
@@ -95,9 +98,9 @@ export const SolanaDeepDive = ({ direction }: TravelProps) => (
               transition={{ delay: 0.3 + i * 0.1 }}
               className="p-3 md:p-6 border-l-2 border-[#14F195]/30 bg-white/5"
             >
-              <h4 className="text-[#14F195] font-black text-[10px] md:text-xs tracking-widest mb-1 uppercase">{p.title}</h4>
-              <p className="text-white/40 text-[9px] md:text-[11px] leading-relaxed uppercase mb-1 md:mb-2">{p.description}</p>
-              <div className="text-[8px] md:text-[9px] font-mono text-white/20 tracking-tighter italic">{p.tech}</div>
+              <h4 className={`${bcType.label} text-[#14F195] font-black mb-1`}>{p.title}</h4>
+              <p className={`${bcType.body} text-white/40 uppercase mb-1 md:mb-2`}>{p.description}</p>
+              <div className={`${bcType.micro} font-mono text-white/20 italic`}>{p.tech}</div>
             </motion.div>
           ))}
         </div>
@@ -121,8 +124,8 @@ export const SolanaEcosystem = ({ direction }: TravelProps) => {
       <MobileScrollWrapper accentColor="solana" maxHeight="80vh">
         <div className="flex flex-col items-center gap-6 md:gap-12 py-4">
           <div className="text-center space-y-1 md:space-y-2">
-            <span className="text-[8px] md:text-[10px] font-mono text-[#9945FF] uppercase tracking-[0.5em] font-bold">The Backbone of Web3</span>
-            <h3 className="text-3xl md:text-5xl font-black italic text-white uppercase tracking-tighter">Powered Ecosystem</h3>
+            <span className={`${bcType.micro} font-mono text-[#9945FF] font-bold`}>The Backbone of Web3</span>
+            <h3 className={`${bcType.title} font-black italic text-white uppercase`}>Powered Ecosystem</h3>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 w-full max-w-5xl">
@@ -139,8 +142,8 @@ export const SolanaEcosystem = ({ direction }: TravelProps) => {
                   <Activity className="w-4 h-4 md:w-5 md:h-5 text-[#14F195]" />
                 </div>
                 <div className="space-y-0.5 md:space-y-1">
-                  <span className="block text-sm md:text-lg font-black text-white italic tracking-tight">{project.name}</span>
-                  <span className="block text-[7px] md:text-[8px] text-white/30 uppercase tracking-[0.2em]">{project.role}</span>
+                  <span className={`block ${bcType.cardTitle} font-black text-white italic`}>{project.name}</span>
+                  <span className={`block ${bcType.micro} text-white/30`}>{project.role}</span>
                 </div>
               </motion.div>
             ))}
@@ -154,7 +157,7 @@ export const SolanaEcosystem = ({ direction }: TravelProps) => {
               className="flex flex-col items-center gap-4 mt-8"
             >
               <div className="h-20 w-px bg-linear-to-b from-[#14F195] to-transparent" />
-              <span className="text-[10px] font-mono text-white/20 uppercase tracking-[0.5em]">Scroll para concluir</span>
+              <span className={`${bcType.micro} font-mono text-white/20`}>Scroll para concluir</span>
             </motion.div>
           )}
         </div>

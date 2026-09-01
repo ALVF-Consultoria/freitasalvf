@@ -1,11 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Activity } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { ecosystemPlatforms } from "@/constants/blockchainData";
+import { useMemo } from "react";
+import { constellationPosters } from "@/constants/blockchainData";
+import { FlyingPosters } from "@/components/FlyingPosters";
 import { useMobile } from "@/hooks/useMobile";
-import { travelFlat, type TravelProps } from "@/lib/travel";
+import { travelScrollIn, type TravelProps } from "@/lib/travel";
 
 interface FillerNode {
   x: number;
@@ -28,15 +28,21 @@ const noise = (n: number) => {
   return t - Math.floor(t);
 };
 
+const posterItems = constellationPosters.map((poster) => poster.src);
+
 export const TopologyStep = ({ direction }: TravelProps) => {
   const isMobile = useMobile();
   const containerSize = isMobile ? 350 : 800;
   const center = containerSize / 2;
-  const radius = isMobile ? 105 : 280;
   const spread = isMobile ? 350 : 850;
   // O celular carrega menos da metade dos nos: sao 60 elementos animando em
-  // paralelo por cima do ParticlesBackground, que ja e outro campo animado.
+  // paralelo por cima do holograma, que ja e um campo de milhares de pontos.
   const nodeCount = isMobile ? 24 : 60;
+
+  // O poster e menor que o canvas de proposito. O canvas e a pista: ocupa o anel
+  // inteiro para os posteres terem por onde entrar e sair de quadro, enquanto o
+  // plano em si para com este tamanho no centro.
+  const posterSize = isMobile ? 200 : 360;
 
   const fillerNodes = useMemo<FillerNode[]>(
     () =>
@@ -52,7 +58,7 @@ export const TopologyStep = ({ direction }: TravelProps) => {
           floatY: (noise(s + 7) - 0.5) * 20,
         };
       }),
-    [nodeCount, spread]
+    [nodeCount, spread],
   );
 
   // Malha decorativa: metade dos nos, ligados ao vizinho tres posicoes a frente.
@@ -69,27 +75,20 @@ export const TopologyStep = ({ direction }: TravelProps) => {
           duration: node.duration,
         };
       }),
-    [fillerNodes, nodeCount, center]
+    [fillerNodes, nodeCount, center],
   );
-
-  // As ligacoes ate o centro so aparecem depois que a constelacao assentou.
-  const [showConnections, setShowConnections] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => setShowConnections(true), 1200);
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <motion.div
-      variants={travelFlat}
+      variants={travelScrollIn}
       custom={direction}
       initial="enter"
       animate="center"
       exit="exit"
-      className={`flex flex-col items-center justify-center font-mono ${isMobile ? "pt-8" : "pt-20"}`}
+      className="absolute inset-0 z-10 flex items-center justify-center font-mono"
     >
       <div
-        className="relative flex items-center justify-center"
+        className="relative flex items-center justify-center shrink-0"
         style={{ width: containerSize, height: containerSize }}
       >
         {/* Decorative Circles */}
@@ -121,7 +120,11 @@ export const TopologyStep = ({ direction }: TravelProps) => {
               strokeWidth="0.5"
               className="text-amber-500/10"
               animate={{ opacity: [0.05, 0.2, 0.05] }}
-              transition={{ duration: line.duration, repeat: Infinity, ease: "linear" }}
+              transition={{
+                duration: line.duration,
+                repeat: Infinity,
+                ease: "linear",
+              }}
             />
           ))}
         </svg>
@@ -138,72 +141,51 @@ export const TopologyStep = ({ direction }: TravelProps) => {
               scale: [1, 1.4, 1],
             }}
             transition={{
-              opacity: { duration: node.duration, repeat: Infinity, delay: node.delay },
-              scale: { duration: node.duration, repeat: Infinity, delay: node.delay },
-              x: { duration: node.duration * 1.5, repeat: Infinity, ease: "easeInOut" },
-              y: { duration: node.duration * 1.5, repeat: Infinity, ease: "easeInOut" },
+              opacity: {
+                duration: node.duration,
+                repeat: Infinity,
+                delay: node.delay,
+              },
+              scale: {
+                duration: node.duration,
+                repeat: Infinity,
+                delay: node.delay,
+              },
+              x: {
+                duration: node.duration * 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              },
+              y: {
+                duration: node.duration * 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+              },
             }}
             className="absolute bg-amber-500/60 rounded-full"
             style={{ width: node.size, height: node.size }}
           />
         ))}
-
-        {/* Central Node */}
-        <div className="relative z-20 flex flex-col items-center">
-          <Activity className={`text-amber-500 mb-2 md:mb-4 animate-pulse ${isMobile ? "w-10 h-10" : "w-16 h-16"}`} />
-          <h3 className={`${isMobile ? "text-xl" : "text-3xl"} font-black text-white uppercase tracking-widest text-center px-4 leading-tight`}>
-            Constellation<br />
-            <span className="text-amber-500">Nodes</span>
-          </h3>
-        </div>
-
-        {/* Ecosystem Links (Constellation) */}
-        {ecosystemPlatforms.map((p, i) => {
-          const angle = [0, 90, 180, 270][i] * (Math.PI / 180);
-          const x = Math.cos(angle) * radius;
-          const y = Math.sin(angle) * radius;
-
-          return (
-            <motion.a
-              key={p.name}
-              href={p.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              initial={{ opacity: 0, x: 0, y: 0 }}
-              animate={{ opacity: 1, x, y }}
-              transition={{ delay: i * 0.1, duration: 1, type: "spring" }}
-              className={`absolute z-30 p-2 md:p-6 border border-white/10 bg-black/60 backdrop-blur-md flex flex-col items-center gap-1 md:gap-3 hover:border-amber-500 transition-all group ${isMobile ? "scale-90" : "scale-100"}`}
-              style={{
-                marginLeft: isMobile ? -50 : -80,
-                marginTop: isMobile ? -30 : -45,
-                width: isMobile ? 100 : 160,
-              }}
-            >
-              <div className={`w-1.5 h-1.5 rounded-full bg-current ${p.color} shadow-[0_0_10px_currentColor]`} />
-              <span className={`${isMobile ? "text-[10px]" : "text-xl"} font-black ${p.color} uppercase tracking-tighter`}>{p.name}</span>
-              <span className={`${isMobile ? "text-[6px]" : "text-[8px]"} text-white/20 font-mono tracking-widest group-hover:text-amber-500/50 transition-colors uppercase`}>Tap_for_Intel</span>
-
-              {/* SVG Connection to Center */}
-              {showConnections && (
-                <svg className="absolute top-1/2 left-1/2 pointer-events-none -z-10 overflow-visible" style={{ width: 0, height: 0 }}>
-                  <motion.line
-                    x1={0} y1={0} x2={-x} y2={-y}
-                    stroke="currentColor"
-                    strokeWidth="1"
-                    strokeDasharray="4 4"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    className={p.color + " opacity-20"}
-                  />
-                </svg>
-              )}
-            </motion.a>
-          );
-        })}
       </div>
-      <p className="mt-20 md:mt-12 text-amber-500/40 text-[9px] md:text-[10px] uppercase tracking-[0.5em] animate-pulse text-center px-6">
-        {"// Sincronizando_Ecossistema_Global //"}
-      </p>
+
+      {/* Os quatro nos do ecossistema, agora posteres, no lugar dos cards que
+          orbitavam em 0/90/180/270. Ocupa a area inteira e nao so o anel: a
+          pista precisa de altura para o poster entrar e sair de quadro, e o
+          scroller de dentro precisa cobrir a tela para receber a roda onde quer
+          que o cursor esteja. */}
+      <div className="absolute inset-0 z-20">
+        <FlyingPosters
+          items={posterItems}
+          planeWidth={posterSize}
+          planeHeight={posterSize}
+          /* Chegando por baixo, a pilha nasce no fim, na Solana. Sem isso o
+             passo abria no Polygon com o scroller em scrollTop 0 — que e a
+             condicao que libera a subida — e uma rolagem para cima saltava os
+             quatro posteres de uma vez, em vez de refazer o caminho. */
+          startAtEnd={direction < 0}
+        />
+      </div>
+
     </motion.div>
   );
 };

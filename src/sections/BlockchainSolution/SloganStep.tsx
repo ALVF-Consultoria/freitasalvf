@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Network } from "lucide-react";
 import { travelPunch, type TravelProps } from "@/lib/travel";
+import { bcType } from "./typography";
 
 export const SloganStep = ({ direction }: TravelProps) => (
   <motion.div
@@ -22,7 +23,7 @@ export const SloganStep = ({ direction }: TravelProps) => (
       <Network className="w-24 h-24 text-amber-500 z-10 drop-shadow-[0_0_20px_rgba(245,158,11,0.5)]" />
     </div>
 
-    <h2 className="text-4xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none text-center mb-12">
+    <h2 className={`${bcType.display} font-black text-white uppercase text-center mb-12`}>
       O Futuro é <br />
       <span className="italic stroke-amber-500/20 stroke-1">Descentralizado.</span>
     </h2>
@@ -32,12 +33,12 @@ export const SloganStep = ({ direction }: TravelProps) => (
         href="https://x.com/FreitasALVF"
         target="_blank"
         rel="noopener noreferrer"
-        className="group relative px-16 py-6 border border-amber-500/40 bg-transparent hover:bg-amber-500 text-amber-500 hover:text-black font-mono text-sm tracking-[0.5em] uppercase transition-all overflow-hidden flex items-center justify-center no-underline"
+        className="group relative px-16 py-6 border border-amber-500/40 bg-transparent hover:bg-amber-500 text-amber-500 hover:text-black font-mono ${bcType.label} transition-all overflow-hidden flex items-center justify-center no-underline"
       >
         <span className="relative z-10">CONNECT_ON_X</span>
         <motion.div className="absolute inset-0 bg-amber-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
       </a>
-      <span className="text-[8px] text-amber-500/20 tracking-widest uppercase">NODE_STATUS: READY_FOR_CONNECTION</span>
+      <span className={`${bcType.micro} text-amber-500/20`}>NODE_STATUS: READY_FOR_CONNECTION</span>
     </div>
   </motion.div>
 );

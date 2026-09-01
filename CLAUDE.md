@@ -94,7 +94,26 @@ inline-block sections have not been audited for it.
 `src/lib/travel.ts` is the Z-travel grammar shared by the step-driven sections (it lived
 in `AISolution/` until BlockchainSolution needed it too): every block enters and exits
 along the camera axis instead of sliding, so forward always reads as flying *through*
-the content. `makeTravel({ near, far, blur })` returns `enter`/`center`/`exit` variants that
+the content. `travelScrollOut`/`travelScrollIn` are the one sanctioned exception, and only
+for one junction — the end of "O Sistema" handing off to the poster stack. That stack is
+moved by scrolling, so flying out of the block and then scrolling into the next one switched
+language mid-gesture; the pair slides instead. **Downward**, because `Media.update` computes
+`y - scroll` and so the posters descend as the scroll advances — a junction sliding up would
+throw the screen one way and the stack the other inside one gesture. Each preset slides only
+on the end that touches the junction and keeps the other end identical to the preset it
+replaced (`travelNormal`, `travelFlat`), which is why the two branches of each variant are
+different in kind. Offsets are in `vh`, not `%`: the blocks have very different heights and
+the distance that matters is the screen's.
+
+`TopologyStep` is the one step **outside** the section's main `<AnimatePresence mode="wait">`,
+in a sibling presence of its own. `mode="wait"` by definition holds the entering child until
+the exit finishes, which made "O Sistema" vanish completely before the first poster existed —
+there was nothing to overlap. In its own default-mode presence both are mounted at once and
+the junction crossfades in both directions. The main presence cannot simply drop `mode="wait"`:
+its children are not absolutely positioned, so two mounted together would sit side by side in
+the flex row. `TopologyStep`'s root is `absolute inset-0`, which is what lets it live outside.
+The stack also starts with its **first poster centred**, not off-screen above — off-screen, the
+step opened on an empty ring and the junction had nothing to hand over. `makeTravel({ near, far, blur })` returns `enter`/`center`/`exit` variants that
 read framer-motion's `custom` to invert on backward scroll — so the orchestrator must pass
 `custom={direction}` on both the `AnimatePresence` and each child. `travelNormal`,
 `travelSoft`, `travelFlat` and `travelPunch` are the four presets in use. Passing `blur: 0`
@@ -104,6 +123,22 @@ force the subtree to rasterize at rest.
 `useStepNavigation` deliberately walks up the DOM (`isAtScrollBoundary`) and refuses to advance while the event target sits inside a scrollable element that hasn't hit its top/bottom. This is what makes mobile work: content too tall for a phone gets wrapped in `MobileScrollWrapper`, which becomes an internal scroller below 768px and a passthrough above it. It lives in `src/components/common/` alongside the other cross-section utilities. It used to sit in a `src/components/blockchain/` folder — blockchain was the first section split into sub-components, so everything landed there and later sections borrowed from it. That folder is gone: its three files were never blockchain-specific.
 
 `useMobile()` (768px breakpoint) is the standard branch for layout, animation intensity, and disabling desktop-only effects (Hero's spotlight mask, `ScrollIndicator`).
+
+`src/sections/BlockchainSolution/typography.ts` is the section's type scale, and the model for
+the rest. Every screen had been written on its own, so the hierarchy had become noise: screen
+titles ran 48 → 36 → 30 over the first three blocks and then jumped to 110 and 128, and body
+copy cycled through `text-[6px]`, `text-[8px]`, `text-[9px]`, `text-[10px]`, `text-[11px]`,
+`text-xs`, `text-sm` and `text-base` with no rule. `bcType` exposes seven roles — `display`,
+`title`, `lede`, `cardTitle`, `body`, `label`, `micro` — and the steps carry no raw size class
+at all; a grep for one in that folder should come back empty.
+
+Each role bundles size, leading and tracking, because the three are coupled — tracking that
+reads at 96px destroys 12px. Weight, case and colour stay at the call site: those vary for
+reasons unrelated to size.
+
+Type drives layout, not the other way round. `TopologyStep`'s orbit radius went 280 → 320
+because its 160px satellites left only ~400px of clear centre, which is why its heading had
+been shrunk to `text-3xl` in the first place.
 
 ### Content vs. presentation
 
@@ -167,24 +202,34 @@ reaches the loop through a ref and is deliberately absent from the effect's depe
 as a dependency it would tear down the particles and re-sample the whole image mid-flight. Same
 goes for `coreFade`.
 
-The hologram deliberately outlives the intro: it stays mounted through the feature steps and
-only exits at step 7, where `TopologyStep` brings its own scenery. Flying into the cube and
-then losing it on the next screen threw the whole trip away. What changes across those steps
-is the vantage — the zoom keeps creeping forward, and `coreFade` opens a hole at the drawing's
-centre so the art stops being the subject and becomes the place the content happens in. That
-hole is also what makes the scene read as being *inside* the piece rather than looking at it:
-the structure sits around the frame instead of across it. Its falloff is squared, not linear —
-linear leaves a wide grey halo where a short edge is wanted. Because the component never
-remounts between steps, the camera keeps moving from one block into the next instead of the
-particles re-gathering on every screen.
+The hologram is **BlockchainSolution's only background**, mounted for all 15 steps with no
+`AnimatePresence` and no step guard — it is born with the section and leaves with it. It began
+as the intro's alone and grew twice, for the same reason each time: flying into the cube and
+then losing it on the next screen threw the trip away, and swapping fields mid-section made
+each block read as a different page. `ParticlesBackground` (was steps 7-11 and 15) and the
+purple Solana grid (was 12-14) are gone. What survives alongside it is only chrome and light —
+the static amber 100px grid, the scanline, and two crossfading radials that keep Solana's
+purple identity without a second field.
 
-BlockchainSolution keeps **one background field on screen at a time**: the hologram over steps
-1-6, `ParticlesBackground` over 7-11 and 15, the Solana grid over 12-14. `ParticlesBackground`
-is gated on `!isSolana && !showHologram` for that reason — a hundred animated divs behind
-thousands of canvas dots is two particle systems competing, and neither reads. It is also not
-just a matter of painting less: every frame those particles animate forces any `backdrop-filter`
-above them to re-sample and re-blur the backdrop, so a still background is what lets the browser
-cache that blur at all.
+What changes from step to step is the vantage, never the field. `coreFade` opens a hole at the
+drawing's centre so the art stops being the subject and becomes the place the content happens
+in; that hole is also what makes the scene read as being *inside* the piece rather than looking
+at it, since the structure sits around the frame instead of across it. Its falloff is squared,
+not linear — linear leaves a wide grey halo where a short edge is wanted. `holoZoom` creeps the
+camera forward through the opening and then **clamps at 4.4** (`Math.min`): past roughly that
+the positions spread far enough that the whole structure leaves the frame and only confetti is
+left on screen. `holoOpacity` is the third knob — 0.85 while the cube is the subject, 0.5 while
+it is the place, 0.35 behind the dense analysis and Solana card grids, 0.6 again for the slogan,
+which has the screen to itself. Because the component never remounts, the camera keeps moving
+from one block into the next instead of the particles re-gathering on every screen.
+
+The old rule was one field at a time; the rule now is one field, full stop. Two animated fields
+is two particle systems competing and neither reads, and it is not just a matter of painting
+less: every frame a background animates forces any `backdrop-filter` above it to re-sample and
+re-blur the backdrop, so a still background is what lets the browser cache that blur at all.
+The Solana and analysis steps stack `backdrop-blur-xl`/`3xl` cards over a field that now never
+stops moving — that is the standing cost of the decision, and dropping the blur on those cards
+is where to look first if those steps feel heavy.
 
 Both read pixels back with `getImageData`, so the source must be same-origin — an image from
 another host without CORS taints the canvas and the read throws. `/public` is fine, and
@@ -206,6 +251,61 @@ sampled disappears against `#050505` and the hue never drifts.
 
 Both thresholds are worth re-measuring when the source image is swapped; the two artworks that
 have been through this component wanted 0.45 and 0.22.
+
+`FlyingPosters` (`src/components/FlyingPosters.tsx`) is the second `ogl` consumer — a stack of
+image planes that slides along the Y axis. It is `TopologyStep`'s content: the four ecosystem
+cards that used to orbit at 0/90/180/270 are now four posters, and so are the title and the
+platform captions that briefly replaced them — the step is the artwork and nothing else.
+
+**`scrollEase` is the effect, not a tuning detail.** The reference ships `0.01`, and that number
+is the whole look: the target races ahead with the scroll while the stack drags behind it for
+seconds. Two rewrites got this wrong before it was right — first a 6s autoplay (abandoned in under
+a second, since the cooldown outside the intro is 700ms), then a step-per-poster snap at ease
+`0.12`, which reads as a dry slide between two fixed positions. `padding` belongs to the same
+family: `5` is the reference and it is the air between posters; at `2` the stack looks crammed.
+Neither is a knob to trim — changing them changes what the component *is*.
+
+Input is a **real scroll container layered over the canvas**, not wheel listeners. That is what
+gives continuous accumulation (the reference's `scroll.target += deltaY`) and it hands off to the
+step machine for free: `useStepNavigation.isAtScrollBoundary` walks up the DOM, finds the scroller,
+and refuses to change step until it has hit top or bottom — the same mechanism `MobileScrollWrapper`
+relies on. So the posters consume the wheel until Solana is centred, and only then does the section
+move on. The scroller has to cover the whole content area, not just the ring, or a wheel event
+whose target sits outside it skips the step straight away. `scrollPerItem` is the pacing knob.
+
+It is adapted from react-bits and diverges in five places, each of which is a trap worth knowing
+before pulling another component from there:
+
+- **The rotation is offset by `-PI/2`.** `localprogress` sweeps 0..PI as a poster descends, and
+  the middle of that sweep lands exactly at the viewport centre — so a poster is at **90°,
+  edge-on and invisible, precisely where the travel stops.** Measured on the original: 170°
+  entering, 90° centred, 10° leaving. The offset turns the sweep into -90°..+90°, which makes the
+  poster face the camera at rest *and* makes the flip symmetric instead of happening only after
+  the centre. `uDistortion` is also ramped to 0 over the last stretch, or the parked poster keeps
+  a ±43° twist between its corners and its middle.
+- **No wheel or drag listeners.** The original binds `wheel`, `mousedown/move/up` and the touch
+  trio on `window`; here that is `useStepNavigation`'s, and both would fire at once. The stack
+  lerps toward `medias[focus].y` instead, starting one screen above the first poster so it flies
+  in rather than appearing already parked.
+- **`destroy()` must not call `WEBGL_lose_context.loseContext()`.** It was added as cleanup and it
+  broke every remount: `reactStrictMode` (Next's default) mounts, unmounts and mounts again, the
+  second mount gets the *same* `<canvas>`, and `getContext` hands back the context just killed.
+  The symptom lands nowhere near the cause — shaders fail with a **null** info log, `Program`
+  returns early before creating `uniformLocations` (`node_modules/ogl/src/core/Program.js:85`), and
+  what surfaces a frame later is `undefined.forEach` inside `renderer.render`, once per frame
+  forever. `program.remove()` releases what is ours; the context belongs to the canvas.
+- **No infinite wrap.** `extra` jumps by `heightTotal`, and with four posters that jump exceeds the
+  stable band (viewport + one plane), so off-screen posters flip position every frame. A single
+  deterministic pass needs no cycle and lands exactly.
+- **`padding` is a prop.** It was hardcoded at 5 world units — about 30% of the viewport height,
+  leaving 1.44 posters on screen. At 2 it is 1.75.
+- **The fragment shader's cover-fit assigned to the wrong axis** (`scale.x` where `scale.y` was
+  meant, and vice versa), so any art whose ratio differed from `planeWidth/planeHeight` was
+  stretched rather than cropped. Fixed, but the rule still holds: match the art to the plane.
+  `planeWidth`/`planeHeight` are literal on-screen pixels — the world-unit conversions cancel.
+
+The canvas is deliberately larger than the plane: it is the runway the posters enter and leave
+through. Source art is 800px square for a 360px plane, because `dpr` is capped at 2.
 
 `ParticleImage` mounts in `BlockchainSolution/index.tsx` for the intro steps, not inside
 `IntroStep`. Two reasons, both general: `IntroStep` enters on `travelSoft`, which applies a
@@ -229,9 +329,9 @@ Video, audio, and images are static files in `public/`, referenced by absolute p
   Read it before touching metadata, routing, or anything SEO-adjacent.
 - `src/components/Galaxy.tsx` (ogl/WebGL starfield) is written and typechecked but **not
   mounted anywhere** — it was tried as the AI section's opening background and pulled back
-  out while a different treatment is chosen. It is the only thing importing `ogl`, and
-  tree-shaking keeps both out of the bundle while it stays unmounted. Delete both together
-  if the idea is dropped for good.
+  out while a different treatment is chosen. `ogl` is now also imported by
+  `FlyingPosters`, so deleting Galaxy no longer drops the dependency — tree-shaking keeps
+  Galaxy's own code out of the bundle while it stays unmounted.
 - `src/components/DepthField.tsx` + `.css` are parked the same way — tiled parallax dot
   layers built as the continuous background for the AI section's 21 content steps, then
   unmounted. Those steps currently have only the radial ambient light behind them.

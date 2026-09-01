@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { blockchainFeatures } from "@/constants/blockchainData";
 import { useMobile } from "@/hooks/useMobile";
 import { MobileScrollWrapper } from "@/components/common/MobileScrollWrapper";
-import { travelNormal, type TravelProps } from "@/lib/travel";
+import { travelScrollOut, type TravelProps } from "@/lib/travel";
+import { bcType } from "./typography";
 
 interface FeatureStepProps extends TravelProps {
   step: number;
@@ -19,7 +20,7 @@ export const FeatureStep = ({ step, direction }: FeatureStepProps) => {
 
   return (
     <motion.div
-      variants={travelNormal}
+      variants={travelScrollOut}
       custom={direction}
       initial="enter"
       animate="center"
@@ -29,12 +30,11 @@ export const FeatureStep = ({ step, direction }: FeatureStepProps) => {
       <MobileScrollWrapper accentColor="amber">
         <div className="flex flex-col md:flex-row gap-6 md:gap-12">
           <div className="md:w-1/3">
-            <h3 className="text-2xl md:text-4xl font-black text-white uppercase tracking-tight mb-2 md:mb-4">
-              System <br />
-              <span className="text-amber-500 underline underline-offset-8 decoration-amber-500/30">Capabilities</span>
+            <h3 className={`${bcType.title} font-black text-white uppercase mb-2 md:mb-4`}>
+              O Sistema
             </h3>
-            <p className="text-[10px] text-amber-500 opacity-60 uppercase tracking-[0.3em] mb-6 md:mb-12">
-              Explorando os fundamentos do protocolo
+            <p className={`${bcType.label} text-amber-500 opacity-60 mb-6 md:mb-12`}>
+              Explorando os fundamentos da Blockchain
             </p>
 
             <div className="space-y-3">
@@ -43,7 +43,7 @@ export const FeatureStep = ({ step, direction }: FeatureStepProps) => {
                   key={f.title}
                   initial={{ opacity: 0, x: -10 }}
                   animate={revealed >= i ? { opacity: 1, x: 0 } : { opacity: 0.1 }}
-                  className={`text-xs uppercase tracking-widest flex items-center gap-3 p-3 border-l-2 transition-all cursor-default ${revealed === i ? "border-amber-500 bg-amber-500/10 text-white" : "border-white/5"}`}
+                  className={`${bcType.label} flex items-center gap-3 p-3 border-l-2 transition-all cursor-default ${revealed === i ? "border-amber-500 bg-amber-500/10 text-white" : "border-white/5"}`}
                 >
                   <span className="opacity-30">0{i + 1}</span> {f.title}
                 </motion.div>
@@ -61,9 +61,9 @@ export const FeatureStep = ({ step, direction }: FeatureStepProps) => {
               >
                 <div>
                   <div className="mb-2 md:mb-8 opacity-40 scale-90 md:scale-125 origin-left">{f.icon}</div>
-                  <h4 className="text-sm md:text-xl font-bold text-white mb-2 md:mb-4 uppercase tracking-tighter">{f.title}</h4>
+                  <h4 className={`${bcType.cardTitle} font-bold text-white mb-2 md:mb-4 uppercase`}>{f.title}</h4>
                 </div>
-                <p className="text-[10px] md:text-sm text-white/40 font-sans leading-relaxed italic line-clamp-3 md:line-clamp-none">
+                <p className={`${bcType.body} text-white/40 font-sans italic line-clamp-3 md:line-clamp-none`}>
                   {f.description}
                 </p>
               </motion.div>
